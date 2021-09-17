@@ -2,10 +2,15 @@ package entity
 
 import (
   "context"
+  "fmt"
   "github.com/mirzaakhena/gogen2/domain/service"
 )
 
 type ObjLog struct {
+}
+
+func NewObjLog() (*ObjLog, error) {
+  return &ObjLog{}, nil
 }
 
 func (o ObjLog) Construct(ctx context.Context, logConstructAction service.LogActionInterface) error {
@@ -38,17 +43,17 @@ func (o ObjLog) Construct(ctx context.Context, logConstructAction service.LogAct
   return nil
 }
 
-//func (o ObjLog) GetLogRootFolderName(ctx context.Context) string {
-//  return fmt.Sprintf("infrastructure/log")
-//}
-//
-//func (o ObjLog) GetLogInterfaceFileName(ctx context.Context) string {
-//  return fmt.Sprintf("infrastructure/log/log.go")
-//}
-//
-//func (o ObjLog) GetLogImplementationFileName(ctx context.Context) string {
-//  return fmt.Sprintf("infrastructure/log/log_default.go")
-//}
+func (o ObjLog) GetRootFolderName() string {
+ return fmt.Sprintf("infrastructure/log")
+}
+
+func (o ObjLog) GetLogInterfaceFileName() string {
+ return fmt.Sprintf("%s/log.go", o.GetRootFolderName())
+}
+
+func (o ObjLog) GetLogImplementationFileName() string {
+ return fmt.Sprintf("%s/log_default.go", o.GetRootFolderName())
+}
 
 //{
 //err := r.outport.CreateFolderIfNotExist(ctx, "infrastructure/log")

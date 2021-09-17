@@ -3,6 +3,7 @@ package gentest
 import (
   "context"
   "github.com/mirzaakhena/gogen2/domain/entity"
+  "github.com/mirzaakhena/gogen2/usecase/genlog"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -25,29 +26,27 @@ func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*In
 
   packagePath := r.outport.GetPackagePath(ctx)
 
+  // create log
   {
-    //objLog := entity.ObjLog{}
-
-    //err := objLog.Construct(ctx, r.outport)
-    //if err != nil {
-    //  return nil, err
-    //}
-
+    _, err := genlog.NewUsecase(r.outport).Execute(ctx, genlog.InportRequest{})
+    if err != nil {
+      return nil, err
+    }
   }
 
-  objTestObj, err := entity.NewObjTesting(req.TestName, req.UsecaseName, packagePath)
+  obj, err := entity.NewObjTesting(req.TestName, req.UsecaseName, packagePath)
   if err != nil {
     return nil, err
   }
 
   // create interactor_test.go
   {
-    outputFile := objTestObj.GetTestFileName()
+    outputFile := obj.GetTestFileName()
 
     if !r.outport.IsFileExist(ctx, outputFile) {
 
       testTemplateFile := r.outport.GetTestTemplateFile(ctx)
-      err := r.outport.WriteFile(ctx, testTemplateFile, outputFile, objTestObj.GetData())
+      err := r.outport.WriteFile(ctx, testTemplateFile, outputFile, obj.GetData())
       if err != nil {
         return nil, err
       }

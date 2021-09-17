@@ -26,13 +26,13 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
   packagePath := r.outport.GetPackagePath(ctx)
 
   // buat object usecase
-  objUsecaseObj, err := entity.NewObjUsecase(req.UsecaseName, packagePath)
+  obj, err := entity.NewObjUsecase(req.UsecaseName, packagePath)
   if err != nil {
     return nil, err
   }
 
   // create folder usecase
-  rootFolderName := objUsecaseObj.GetRootFolderName()
+  rootFolderName := obj.GetRootFolderName()
   err = r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
   if err != nil {
     return nil, err
@@ -41,8 +41,8 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
   // create file inport.go
   {
     inportTemplateFile := r.outport.GetInportTemplateFile(ctx)
-    outputFile := objUsecaseObj.GetInportFileName()
-    err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, objUsecaseObj.GetData())
+    outputFile := obj.GetInportFileName()
+    err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, obj.GetData())
     if err != nil {
       return nil, err
     }
@@ -51,8 +51,8 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
   // create file outport.go
   {
     outportTemplateFile := r.outport.GetOutportTemplateFile(ctx)
-    outputFile := objUsecaseObj.GetOutportFileName()
-    err := r.outport.WriteFileIfNotExist(ctx, outportTemplateFile, outputFile, objUsecaseObj.GetData())
+    outputFile := obj.GetOutportFileName()
+    err := r.outport.WriteFileIfNotExist(ctx, outportTemplateFile, outputFile, obj.GetData())
     if err != nil {
       return nil, err
     }
@@ -61,8 +61,8 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
   // create file interactor.go
   {
     interactorTemplateFile := r.outport.GetInteractorTemplateFile(ctx)
-    outputFile := objUsecaseObj.GetInteractorFileName()
-    err := r.outport.WriteFileIfNotExist(ctx, interactorTemplateFile, outputFile, objUsecaseObj.GetData())
+    outputFile := obj.GetInteractorFileName()
+    err := r.outport.WriteFileIfNotExist(ctx, interactorTemplateFile, outputFile, obj.GetData())
     if err != nil {
       return nil, err
     }

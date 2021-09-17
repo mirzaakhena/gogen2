@@ -17,6 +17,8 @@ import (
 type prodGateway struct {
 }
 
+
+
 // NewProdGateway ...
 func NewProdGateway() (*prodGateway, error) {
 	return &prodGateway{}, nil
@@ -141,4 +143,12 @@ func (r *prodGateway) GetInteractorTemplateFile(ctx context.Context) string {
 
 func (r *prodGateway) GetTestTemplateFile(ctx context.Context) string {
 	return templates.TestFile
+}
+
+func (r *prodGateway) GetLogInterfaceTemplate(ctx context.Context) string {
+	return templates.LogFile
+}
+
+func (r *prodGateway) GetLogImplementationFileName(ctx context.Context) string {
+	return templates.LogDefaultFile
 }

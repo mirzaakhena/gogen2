@@ -1,0 +1,2 @@
+nambahinn transaction
+nambahin default gorm

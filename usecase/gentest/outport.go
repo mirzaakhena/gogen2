@@ -1,20 +1,18 @@
 package gentest
 
 import (
-  "context"
-  "github.com/mirzaakhena/gogen2/domain/service"
+	"context"
+	"github.com/mirzaakhena/gogen2/domain/service"
+	"github.com/mirzaakhena/gogen2/usecase/genlog"
 )
 
 // Outport of GenTest
 type Outport interface {
-  service.CreateFolderIfNotExistService
-  service.WriteFileIfNotExistService
-  service.IsFileExistService
-  service.WriteFileService
-  service.ReformatService
-  service.GetPackagePathService
+	genlog.Outport
+	service.IsFileExistService
+	service.WriteFileService
+	service.ReformatService
+	service.GetPackagePathService
 
-  GetTestTemplateFile(ctx context.Context) string
-
-
+	GetTestTemplateFile(ctx context.Context) string
 }
