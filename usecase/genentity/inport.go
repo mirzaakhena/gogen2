@@ -11,8 +11,10 @@ type Inport interface {
 
 // InportRequest is request payload to run the usecase GenEntity
 type InportRequest struct {
+	EntityName string
 }
 
 // InportResponse is response payload after running the usecase GenEntity
 type InportResponse struct {
+	Message string
 }

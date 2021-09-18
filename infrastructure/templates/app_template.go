@@ -23,3 +23,7 @@ var LogFile string
 //go:embed default/infrastructure/log/infra_log_default._go
 var LogDefaultFile string
 
+//go:embed default/domain/entity/entity._go
+var EntityFile string
+
+

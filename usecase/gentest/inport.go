@@ -17,4 +17,5 @@ type InportRequest struct {
 
 // InportResponse is response payload after running the usecase GenTest
 type InportResponse struct {
+	Message string
 }

@@ -8,8 +8,6 @@ import (
   "go/ast"
   "go/parser"
   "go/token"
-  "golang.org/x/tools/imports"
-  "io/ioutil"
   "os"
 )
 
@@ -43,7 +41,7 @@ func (o ObjRepository) GetRootFolderName() string {
   return fmt.Sprintf("domain/repository")
 }
 
-func (o ObjRepository) GetMainFileName() string {
+func (o ObjRepository) GetRepositoryFileName() string {
   return fmt.Sprintf("%s/repository.go", o.GetRootFolderName())
 }
 
@@ -92,7 +90,7 @@ func (o ObjRepository) IsRepoExist() (bool, error) {
 func (o ObjRepository) InjectCode(repoTemplateCode string) error {
 
   // reopen the file
-  file, err := os.Open(o.GetMainFileName())
+  file, err := os.Open(o.GetRepositoryFileName())
   if err != nil {
     return err
   }
@@ -114,15 +112,15 @@ func (o ObjRepository) InjectCode(repoTemplateCode string) error {
   buffer.WriteString(repoTemplateCode)
   buffer.WriteString("\n")
 
-  // reformat and do import
-  newBytes, err := imports.Process(o.GetMainFileName(), buffer.Bytes(), nil)
-  if err != nil {
-    return err
-  }
-
-  if err := ioutil.WriteFile(o.GetMainFileName(), newBytes, 0644); err != nil {
-    return err
-  }
+  //// reformat and do import
+  //newBytes, err := imports.Process(o.GetRepositoryFileName(), buffer.Bytes(), nil)
+  //if err != nil {
+  //  return err
+  //}
+  //
+  //if err := ioutil.WriteFile(o.GetRepositoryFileName(), newBytes, 0644); err != nil {
+  //  return err
+  //}
 
   return nil
 }

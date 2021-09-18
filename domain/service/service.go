@@ -3,11 +3,11 @@ package service
 import "context"
 
 type CreateFolderIfNotExistService interface {
-  CreateFolderIfNotExist(ctx context.Context, folderPath string) error
+  CreateFolderIfNotExist(ctx context.Context, folderPath string) (bool, error)
 }
 
 type WriteFileIfNotExistService interface {
-  WriteFileIfNotExist(ctx context.Context, templateFile, outputFilePath string, obj interface{}) error
+  WriteFileIfNotExist(ctx context.Context, templateFile, outputFilePath string, obj interface{}) (bool, error)
 }
 
 type WriteFileService interface {

@@ -16,7 +16,7 @@ func NewObjLog() (*ObjLog, error) {
 func (o ObjLog) Construct(ctx context.Context, logConstructAction service.LogActionInterface) error {
 
   {
-    err := logConstructAction.CreateFolderIfNotExist(ctx, logConstructAction.GetLogRootFolderName(ctx))
+    _, err := logConstructAction.CreateFolderIfNotExist(ctx, logConstructAction.GetLogRootFolderName(ctx))
     if err != nil {
       return err
     }
@@ -25,7 +25,7 @@ func (o ObjLog) Construct(ctx context.Context, logConstructAction service.LogAct
   {
     logTemplateFile := logConstructAction.GetLogInterfaceTemplate(ctx)
     outputFile := logConstructAction.GetLogInterfaceFileName(ctx)
-    err := logConstructAction.WriteFileIfNotExist(ctx, logTemplateFile, outputFile, struct{}{})
+    _, err := logConstructAction.WriteFileIfNotExist(ctx, logTemplateFile, outputFile, struct{}{})
     if err != nil {
       return err
     }
@@ -34,7 +34,7 @@ func (o ObjLog) Construct(ctx context.Context, logConstructAction service.LogAct
   {
     logImplTemplateFile := logConstructAction.GetLogImplementationTemplate(ctx)
     outputFile := logConstructAction.GetLogImplementationFileName(ctx)
-    err := logConstructAction.WriteFileIfNotExist(ctx, logImplTemplateFile, outputFile, struct{}{})
+    _, err := logConstructAction.WriteFileIfNotExist(ctx, logImplTemplateFile, outputFile, struct{}{})
     if err != nil {
       return err
     }

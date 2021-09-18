@@ -29,15 +29,17 @@ func (r *genLogInteractor) Execute(ctx context.Context, req InportRequest) (*Inp
 	}
 
 	rootFolderName := obj.GetRootFolderName()
-	err = r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
-	if err != nil {
-		return nil, err
+	{
+		_, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	{
 		logTemplateFile := r.outport.GetLogInterfaceTemplate(ctx)
 		outputFile := obj.GetLogInterfaceFileName()
-		err := r.outport.WriteFileIfNotExist(ctx, logTemplateFile, outputFile, struct{}{})
+		_, err := r.outport.WriteFileIfNotExist(ctx, logTemplateFile, outputFile, struct{}{})
 		if err != nil {
 			return nil, err
 		}
@@ -46,7 +48,7 @@ func (r *genLogInteractor) Execute(ctx context.Context, req InportRequest) (*Inp
 	{
 		logTemplateFile := r.outport.GetLogImplementationFileName(ctx)
 		outputFile := obj.GetLogImplementationFileName()
-		err := r.outport.WriteFileIfNotExist(ctx, logTemplateFile, outputFile, struct{}{})
+		_, err := r.outport.WriteFileIfNotExist(ctx, logTemplateFile, outputFile, struct{}{})
 		if err != nil {
 			return nil, err
 		}

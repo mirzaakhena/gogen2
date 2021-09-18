@@ -17,28 +17,26 @@ import (
 type prodGateway struct {
 }
 
-
-
 // NewProdGateway ...
 func NewProdGateway() (*prodGateway, error) {
 	return &prodGateway{}, nil
 }
 
-func (r *prodGateway) CreateFolderIfNotExist(ctx context.Context, folderPath string) error {
+func (r *prodGateway) CreateFolderIfNotExist(ctx context.Context, folderPath string) (bool, error) {
 	if r.IsFileExist(ctx, folderPath) {
-		return nil
+		return true, nil
 	}
 	if err := os.MkdirAll(folderPath, 0755); err != nil {
-		return err
+		return false, err
 	}
-	return nil
+	return false, nil
 }
 
-func (r *prodGateway) WriteFileIfNotExist(ctx context.Context, templateFile, outputFilePath string, obj interface{}) error {
+func (r *prodGateway) WriteFileIfNotExist(ctx context.Context, templateFile, outputFilePath string, obj interface{}) (bool, error) {
 	if r.IsFileExist(ctx, outputFilePath) {
-		return nil
+		return true, nil
 	}
-	return r.WriteFile(ctx, templateFile, outputFilePath, obj)
+	return false, r.WriteFile(ctx, templateFile, outputFilePath, obj)
 }
 
 func (r *prodGateway) WriteFile(ctx context.Context, templateFile, outputFilePath string, obj interface{}) error {
@@ -129,19 +127,19 @@ func (r *prodGateway) GetPackagePath(ctx context.Context) string {
 
 }
 
-func (r *prodGateway) GetInportTemplateFile(ctx context.Context) string {
+func (r *prodGateway) GetInportTemplate(ctx context.Context) string {
 	return templates.InportFile
 }
 
-func (r *prodGateway) GetOutportTemplateFile(ctx context.Context) string {
+func (r *prodGateway) GetOutportTemplate(ctx context.Context) string {
 	return templates.OutportFile
 }
 
-func (r *prodGateway) GetInteractorTemplateFile(ctx context.Context) string {
+func (r *prodGateway) GetInteractorTemplate(ctx context.Context) string {
 	return templates.InteractorFile
 }
 
-func (r *prodGateway) GetTestTemplateFile(ctx context.Context) string {
+func (r *prodGateway) GetTestTemplate(ctx context.Context) string {
 	return templates.TestFile
 }
 
@@ -151,4 +149,16 @@ func (r *prodGateway) GetLogInterfaceTemplate(ctx context.Context) string {
 
 func (r *prodGateway) GetLogImplementationFileName(ctx context.Context) string {
 	return templates.LogDefaultFile
+}
+
+func (r *prodGateway) GetEntityTemplate(ctx context.Context) string {
+	return templates.EntityFile
+}
+
+func (r *prodGateway) GetRepositoryTemplate(ctx context.Context) string {
+	panic("implement me") // TODO GetRepositoryTemplate
+}
+
+func (r *prodGateway) GetRepositoryFunctionTemplate(ctx context.Context) (string, error) {
+	panic("implement me") // TODO GetRepositoryFunctionTemplate
 }

@@ -14,5 +14,5 @@ type Outport interface {
 	service.ReformatService
 	service.GetPackagePathService
 
-	GetTestTemplateFile(ctx context.Context) string
+	GetTestTemplate(ctx context.Context) string
 }

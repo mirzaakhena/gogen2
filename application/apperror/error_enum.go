@@ -6,4 +6,5 @@ const (
 	UnrecognizedEnum               ErrorType = "ER1002 %s is not recognized %s enum"     // used by enum
 	DatabaseNotFoundInContextError ErrorType = "ER1003 Database is not found in context" // used by repoimpl
 	UsecaseNameMustNotEmpty        ErrorType = "ER1000 usecase name must not empty"      //
+	EntityNameMustNotEmpty         ErrorType = "ER1000 entity name must not empty"       //
 )

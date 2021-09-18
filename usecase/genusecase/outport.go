@@ -12,7 +12,7 @@ type Outport interface {
   service.ReformatService
   service.GetPackagePathService
 
-  GetInportTemplateFile(ctx context.Context) string
-  GetOutportTemplateFile(ctx context.Context) string
-  GetInteractorTemplateFile(ctx context.Context) string
+  GetInportTemplate(ctx context.Context) string
+  GetOutportTemplate(ctx context.Context) string
+  GetInteractorTemplate(ctx context.Context) string
 }
