@@ -63,14 +63,14 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
 		return nil, err
 	}
 
+	packagePath := r.outport.GetPackagePath(ctx)
+
 	if !exist {
 		// check the prefix and give specific template for it
 		templateCode, err := r.outport.GetRepositoryFunctionTemplate(ctx, obj.RepositoryName)
 		if err != nil {
 			return nil, err
 		}
-
-		packagePath := r.outport.GetPackagePath(ctx)
 
 		templateHasBeenInjected, err := r.outport.PrintTemplate(ctx, templateCode, obj.GetData(packagePath))
 		if err != nil {
@@ -95,10 +95,12 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
 	}
 
 	// inject to outport
-	outportFile, err := obj.InjectToOutport()
+	err = obj.InjectToOutport()
 	if err != nil {
 		return nil, err
 	}
+
+	outportFile := entity.GetOutportFileName(obj.ObjUsecase)
 
 	// reformat outport.go
 	err = r.outport.Reformat(ctx, outportFile, nil)
@@ -106,7 +108,27 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
 		return nil, err
 	}
 
+	// check the prefix and give specific template for it
+	interactorCode, err := r.outport.GetInteractorRepoCallTemplate(ctx, obj.RepositoryName)
+	if err != nil {
+		return nil, err
+	}
 
+	templateHasBeenInjected, err := r.outport.PrintTemplate(ctx, interactorCode, obj.GetData(packagePath))
+	if err != nil {
+		return nil, err
+	}
+
+	interactorBytes, err := obj.InjectToInteractor(templateHasBeenInjected)
+	if err != nil {
+		return nil, err
+	}
+
+	// reformat outport.go
+	err = r.outport.Reformat(ctx, entity.GetInteractorFileName(obj.ObjUsecase), interactorBytes)
+	if err != nil {
+		return nil, err
+	}
 
 	return res, nil
 }

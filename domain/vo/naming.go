@@ -1,6 +1,8 @@
 package vo
 
-import "strings"
+import (
+	"strings"
+)
 
 type Naming string
 
@@ -19,7 +21,7 @@ func (r Naming) HasPrefix(str string) bool {
 func (r Naming) HasOneOfThisPrefix(str ...string) bool {
 	lc := r.LowerCase()
 	for _, s := range str {
-		if lc == s {
+		if strings.HasPrefix(lc, s) {
 			return true
 		}
 	}

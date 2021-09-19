@@ -42,3 +42,20 @@ var (
 	//go:embed default/domain/repository/repository_interface_save._go
 	RepositoryInterfaceSaveFile string
 )
+
+var (
+	//go:embed default/domain/repository/repository_inject._go
+	RepoInjectInteractorFile string
+
+	//go:embed default/domain/repository/repository_inject_find._go
+	RepoInjectInteractorFindFile string
+
+	//go:embed default/domain/repository/repository_inject_findone._go
+	RepoInjectInteractorFindOneFile string
+
+	//go:embed default/domain/repository/repository_inject_save._go
+	RepoInjectInteractorSaveFile string
+
+	//go:embed default/domain/repository/repository_inject_remove._go
+	RepoInjectInteractorRemoveFile string
+)

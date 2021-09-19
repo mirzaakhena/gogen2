@@ -12,6 +12,7 @@ import (
 	"golang.org/x/tools/imports"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type ObjRepository struct {
@@ -137,7 +138,7 @@ func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-func (o ObjRepository) InjectToOutport() (string, error) {
+func (o ObjRepository) InjectToOutport() error {
 
 	fileReadPath := GetOutportFileName(o.ObjUsecase)
 
@@ -145,7 +146,7 @@ func (o ObjRepository) InjectToOutport() (string, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, fileReadPath, nil, parser.ParseComments)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// assume never injected before
@@ -227,21 +228,21 @@ func (o ObjRepository) InjectToOutport() (string, error) {
 		// rewrite the outport
 		f, err := os.Create(fileReadPath)
 		if err := printer.Fprint(f, fset, file); err != nil {
-			return "", err
+			return err
 		}
 		err = f.Close()
 		if err != nil {
-			return "", err
+			return err
 		}
 
 		// reformat and import
 		newBytes, err := imports.Process(fileReadPath, nil, nil)
 		if err != nil {
-			return "", err
+			return err
 		}
 
 		if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
-			return "", err
+			return err
 		}
 
 	}
@@ -249,8 +250,87 @@ func (o ObjRepository) InjectToOutport() (string, error) {
 	// try to inject to interactor
 	//obj.injectToInteractor()
 
-	return fileReadPath, nil
+	return nil
 
+}
+
+const injectedCodeLocation = "//!"
+
+func (o ObjRepository) InjectToInteractor(injectedCode string) ([]byte, error) {
+
+	existingFile := GetInteractorFileName(o.ObjUsecase)
+
+	// open interactor file
+	file, err := os.Open(existingFile)
+	if err != nil {
+		return nil, err
+	}
+
+	//// check the repo name and return specific template
+	//constTemplateCode, err := obj.prepareInteractorTemplate()
+	//if err != nil {
+	//	return err
+	//}
+
+	needToInject := false
+
+	scanner := bufio.NewScanner(file)
+	var buffer bytes.Buffer
+	for scanner.Scan() {
+		row := scanner.Text()
+
+		// check the injected code in interactor
+		if strings.TrimSpace(row) == injectedCodeLocation {
+
+			needToInject = true
+
+			//// we need to provide an error
+			//InitiateError()
+
+			// inject code
+			buffer.WriteString(injectedCode)
+			buffer.WriteString("\n")
+
+			continue
+		}
+
+		buffer.WriteString(row)
+		buffer.WriteString("\n")
+	}
+
+	// if no injected marker found, then abort the next step
+	if !needToInject {
+		return nil, nil
+	}
+
+	if err := file.Close(); err != nil {
+		return nil, err
+	}
+
+	// rewrite the file
+	if err := ioutil.WriteFile(existingFile, buffer.Bytes(), 0644); err != nil {
+		return nil, err
+	}
+
+	//fset := token.NewFileSet()
+	//node, err := parser.ParseFile(fset, existingFile, nil, parser.ParseComments)
+	//if err != nil {
+	//	return nil,  err
+	//}
+	//
+	//// reformat the code
+	//var newBuf bytes.Buffer
+	//err = format.Node(&newBuf, fset, node)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//// rewrite again
+	//if err := ioutil.WriteFile(existingFile, newBuf.Bytes(), 0644); err != nil {
+	//	return nil, err
+	//}
+
+	return buffer.Bytes(), nil
 }
 
 func (o ObjRepository) getRepositoryName() string {
