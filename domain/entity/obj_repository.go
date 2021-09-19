@@ -70,45 +70,62 @@ func GetRepositoryFileName() string {
 
 func (o ObjRepository) IsRepoExist() (bool, error) {
 
-	fset := token.NewFileSet()
-
-	pkgs, err := parser.ParseDir(fset, GetRepositoryRootFolderName(), nil, parser.ParseComments)
-	if err != nil {
-		return false, err
+	var isWantedType = func(expr ast.Expr) bool {
+		_, ok := expr.(*ast.InterfaceType)
+		return ok
 	}
 
-	for _, pkg := range pkgs {
-		for _, file := range pkg.Files {
+	return IsExist(GetRepositoryRootFolderName(), o.getRepositoryName(), isWantedType)
 
-			for _, decl := range file.Decls {
-
-				gen, ok := decl.(*ast.GenDecl)
-				if !ok || gen.Tok != token.TYPE {
-					continue
-				}
-
-				for _, specs := range gen.Specs {
-
-					ts, ok := specs.(*ast.TypeSpec)
-					if !ok {
-						continue
-					}
-
-					if _, ok = ts.Type.(*ast.InterfaceType); !ok {
-						continue
-					}
-
-					// repo already exist, abort the command
-					if ts.Name.String() == o.getRepositoryName() {
-						return true, nil
-					}
-				}
-			}
-		}
-	}
-
-	return false, nil
 }
+
+//func (o ObjRepository) IsRepoExist() (bool, error) {
+//
+//	fset := token.NewFileSet()
+//
+//	pkgs, err := parser.ParseDir(fset, GetRepositoryRootFolderName(), nil, parser.ParseComments)
+//	if err != nil {
+//		return false, err
+//	}
+//
+//	// in every package
+//	for _, pkg := range pkgs {
+//
+//		// in every files
+//		for _, file := range pkg.Files {
+//
+//			// in every declaration like type, func, const
+//			for _, decl := range file.Decls {
+//
+//				// focus only to type
+//				gen, ok := decl.(*ast.GenDecl)
+//				if !ok || gen.Tok != token.TYPE {
+//					continue
+//				}
+//
+//				for _, specs := range gen.Specs {
+//
+//					ts, ok := specs.(*ast.TypeSpec)
+//					if !ok {
+//						continue
+//					}
+//
+//					// focus only to Interface Type
+//					if _, ok = ts.Type.(*ast.InterfaceType); !ok {
+//						continue
+//					}
+//
+//					// repo already exist, abort the command
+//					if ts.Name.String() == o.getRepositoryName() {
+//						return true, nil
+//					}
+//				}
+//			}
+//		}
+//	}
+//
+//	return false, nil
+//}
 
 func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 
@@ -247,9 +264,6 @@ func (o ObjRepository) InjectToOutport() error {
 
 	}
 
-	// try to inject to interactor
-	//obj.injectToInteractor()
-
 	return nil
 
 }
@@ -265,12 +279,6 @@ func (o ObjRepository) InjectToInteractor(injectedCode string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	//// check the repo name and return specific template
-	//constTemplateCode, err := obj.prepareInteractorTemplate()
-	//if err != nil {
-	//	return err
-	//}
 
 	needToInject := false
 
@@ -311,24 +319,6 @@ func (o ObjRepository) InjectToInteractor(injectedCode string) ([]byte, error) {
 	if err := ioutil.WriteFile(existingFile, buffer.Bytes(), 0644); err != nil {
 		return nil, err
 	}
-
-	//fset := token.NewFileSet()
-	//node, err := parser.ParseFile(fset, existingFile, nil, parser.ParseComments)
-	//if err != nil {
-	//	return nil,  err
-	//}
-	//
-	//// reformat the code
-	//var newBuf bytes.Buffer
-	//err = format.Node(&newBuf, fset, node)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//// rewrite again
-	//if err := ioutil.WriteFile(existingFile, newBuf.Bytes(), 0644); err != nil {
-	//	return nil, err
-	//}
 
 	return buffer.Bytes(), nil
 }

@@ -39,7 +39,7 @@ func (r *genEntityInteractor) Execute(ctx context.Context, req InportRequest) (*
 		}
 	}
 
-	exist, err := obj.IsExist()
+	exist, err := obj.IsEntityExist()
 	if err != nil {
 		return nil, err
 	}
