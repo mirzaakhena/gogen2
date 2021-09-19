@@ -98,7 +98,7 @@ func (o ObjRepository) IsRepoExist() (bool, error) {
 					}
 
 					// repo already exist, abort the command
-					if ts.Name.String() == fmt.Sprintf("%sRepo", o.RepositoryName) {
+					if ts.Name.String() == o.getRepositoryName() {
 						return true, nil
 					}
 				}
@@ -137,7 +137,7 @@ func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-func (o ObjRepository) injectToOutport() error {
+func (o ObjRepository) InjectToOutport() (string, error) {
 
 	fileReadPath := GetOutportFileName(o.ObjUsecase)
 
@@ -145,7 +145,7 @@ func (o ObjRepository) injectToOutport() error {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, fileReadPath, nil, parser.ParseComments)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// assume never injected before
@@ -221,24 +221,27 @@ func (o ObjRepository) injectToOutport() error {
 
 	if !isAlreadyInjectedBefore {
 
+		// TODO who is responsible to write a file? entity or gateway?
+		// i prefer to use gateway instead of entity
+
 		// rewrite the outport
 		f, err := os.Create(fileReadPath)
 		if err := printer.Fprint(f, fset, file); err != nil {
-			return err
+			return "", err
 		}
 		err = f.Close()
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		// reformat and import
 		newBytes, err := imports.Process(fileReadPath, nil, nil)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
-			return err
+			return "", err
 		}
 
 	}
@@ -246,11 +249,10 @@ func (o ObjRepository) injectToOutport() error {
 	// try to inject to interactor
 	//obj.injectToInteractor()
 
-	return nil
+	return fileReadPath, nil
 
 }
 
 func (o ObjRepository) getRepositoryName() string {
-	// Name: fmt.Sprintf("%sRepo", o.RepositoryName),
 	return fmt.Sprintf("%sRepo", o.RepositoryName)
 }

@@ -45,6 +45,9 @@ func GetEntityFileName(o ObjEntity) string {
 
 func (o ObjEntity) IsExist() (bool, error) {
 
+	// TODO who is responsible to read a file? entity or gateway?
+	// i prefer to use gateway
+
 	fset := token.NewFileSet()
 
 	pkgs, err := parser.ParseDir(fset, GetEntityRootFolderName(), nil, parser.ParseComments)
@@ -81,7 +84,7 @@ func (o ObjEntity) IsExist() (bool, error) {
 					}
 
 					// entity already exist, abort the command
-					if ts.Name.String() == fmt.Sprintf("%s", o.EntityName) {
+					if ts.Name.String() == o.EntityName.String() {
 						return true, nil
 					}
 				}

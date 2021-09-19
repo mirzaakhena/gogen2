@@ -94,7 +94,18 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
 		return res, nil
 	}
 
-	// inject to outport first
+	// inject to outport
+	outportFile, err := obj.InjectToOutport()
+	if err != nil {
+		return nil, err
+	}
+
+	// reformat outport.go
+	err = r.outport.Reformat(ctx, outportFile, nil)
+	if err != nil {
+		return nil, err
+	}
+
 
 
 	return res, nil
