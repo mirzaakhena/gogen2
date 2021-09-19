@@ -15,7 +15,7 @@ type WriteFileService interface {
 }
 
 type ReformatService interface {
-  Reformat(ctx context.Context, goFilename string) error
+  Reformat(ctx context.Context, goFilename string, bytes []byte) error
 }
 
 type GetPackagePathService interface {
@@ -24,4 +24,8 @@ type GetPackagePathService interface {
 
 type IsFileExistService interface {
   IsFileExist(ctx context.Context, filepath string) bool
+}
+
+type PrintTemplateService interface {
+  PrintTemplate(ctx context.Context, templateString string, x interface{}) (string, error)
 }

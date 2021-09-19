@@ -2,6 +2,7 @@ package genentity
 
 import (
 	"context"
+	"fmt"
 	"github.com/mirzaakhena/gogen2/domain/entity"
 )
 
@@ -30,7 +31,7 @@ func (r *genEntityInteractor) Execute(ctx context.Context, req InportRequest) (*
 	}
 
 	// create folder entity
-	rootFolderName := obj.GetRootFolderName()
+	rootFolderName := entity.GetEntityRootFolderName()
 	{
 		_, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
 		if err != nil {
@@ -45,21 +46,21 @@ func (r *genEntityInteractor) Execute(ctx context.Context, req InportRequest) (*
 
 	// entity already exist, nothing to do
 	if exist {
-		res.Message = "Entity already exist"
-		return nil, nil
+		res.Message = fmt.Sprintf("Entity with name %s already exist", req.EntityName)
+		return res, nil
 	}
 
 	// create file entity.go
 	{
 		inportTemplateFile := r.outport.GetEntityTemplate(ctx)
-		outputFile := obj.GetEntityFileName()
+		outputFile := entity.GetEntityFileName(*obj)
 		_, err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, obj.GetData())
 		if err != nil {
 			return nil, err
 		}
 
 		// reformat interactor.go
-		err = r.outport.Reformat(ctx, outputFile)
+		err = r.outport.Reformat(ctx, outputFile, nil)
 		if err != nil {
 			return nil, err
 		}

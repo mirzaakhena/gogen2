@@ -18,16 +18,29 @@ type method struct {
   DefaultReturnVal string //
 }
 
-func (obj *OutportMethods) ReadOutport(usecaseName, packagePath string) error {
+func NewOutportMethods(usecaseName, packagePath string) (OutportMethods, error) {
   fileReadPath := fmt.Sprintf("usecase/%s", strings.ToLower(usecaseName))
 
-  err := obj.readInterface("Outport", fileReadPath, packagePath)
+  var om OutportMethods
+
+  err := om.readInterface("Outport", fileReadPath, packagePath)
   if err != nil {
-    return err
+    return nil, err
   }
 
-  return nil
+  return om, nil
 }
+
+//func (obj *OutportMethods) ReadOutport(usecaseName, packagePath string) error {
+//  fileReadPath := fmt.Sprintf("usecase/%s", strings.ToLower(usecaseName))
+//
+//  err := obj.readInterface("Outport", fileReadPath, packagePath)
+//  if err != nil {
+//    return err
+//  }
+//
+//  return nil
+//}
 
 func (obj *OutportMethods) readInterface(interfaceName, folderPath, packagePath string) error {
 

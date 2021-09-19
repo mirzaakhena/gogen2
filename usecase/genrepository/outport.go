@@ -3,6 +3,7 @@ package genrepository
 import (
   "context"
   "github.com/mirzaakhena/gogen2/domain/service"
+  "github.com/mirzaakhena/gogen2/domain/vo"
   "github.com/mirzaakhena/gogen2/usecase/genentity"
 )
 
@@ -13,7 +14,8 @@ type Outport interface {
   service.WriteFileService
   service.GetPackagePathService
   service.CreateFolderIfNotExistService
+  service.PrintTemplateService
   GetRepositoryTemplate(ctx context.Context) string
-  GetRepositoryFunctionTemplate(ctx context.Context) (string, error)
+  GetRepositoryFunctionTemplate(ctx context.Context, repoName vo.Naming) (string, error)
 }
 

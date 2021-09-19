@@ -2,6 +2,7 @@ package genusecase
 
 import (
 	"context"
+	"fmt"
 	"github.com/mirzaakhena/gogen2/domain/entity"
 )
 
@@ -23,29 +24,33 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
 
 	res := &InportResponse{}
 
-	packagePath := r.outport.GetPackagePath(ctx)
-
 	// buat object usecase
-	obj, err := entity.NewObjUsecase(req.UsecaseName, packagePath)
+	obj, err := entity.NewObjUsecase(req.UsecaseName)
 	if err != nil {
 		return nil, err
 	}
 
 	// create folder usecase
-	rootFolderName := obj.GetRootFolderName()
-
+	rootFolderName := entity.GetUsecaseRootFolderName(*obj)
 	{
-		_, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
+		exist, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
 		if err != nil {
 			return nil, err
 		}
+
+		if exist {
+			res.Message = fmt.Sprintf("Usecase with package name %s already exist", obj.UsecaseName.LowerCase())
+			return res, nil
+		}
 	}
+
+	packagePath := r.outport.GetPackagePath(ctx)
 
 	// create file inport.go
 	{
 		inportTemplateFile := r.outport.GetInportTemplate(ctx)
-		outputFile := obj.GetInportFileName()
-		_, err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, obj.GetData())
+		outputFile := entity.GetInportFileName(*obj)
+		_, err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, obj.GetData(packagePath))
 		if err != nil {
 			return nil, err
 		}
@@ -54,8 +59,8 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
 	// create file outport.go
 	{
 		outportTemplateFile := r.outport.GetOutportTemplate(ctx)
-		outputFile := obj.GetOutportFileName()
-		_, err := r.outport.WriteFileIfNotExist(ctx, outportTemplateFile, outputFile, obj.GetData())
+		outputFile := entity.GetOutportFileName(*obj)
+		_, err := r.outport.WriteFileIfNotExist(ctx, outportTemplateFile, outputFile, obj.GetData(packagePath))
 		if err != nil {
 			return nil, err
 		}
@@ -64,14 +69,14 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
 	// create file interactor.go
 	{
 		interactorTemplateFile := r.outport.GetInteractorTemplate(ctx)
-		outputFile := obj.GetInteractorFileName()
-		_, err := r.outport.WriteFileIfNotExist(ctx, interactorTemplateFile, outputFile, obj.GetData())
+		outputFile := entity.GetInteractorFileName(*obj)
+		_, err := r.outport.WriteFileIfNotExist(ctx, interactorTemplateFile, outputFile, obj.GetData(packagePath))
 		if err != nil {
 			return nil, err
 		}
 
 		// reformat interactor.go
-		err = r.outport.Reformat(ctx, outputFile)
+		err = r.outport.Reformat(ctx, outputFile, nil)
 		if err != nil {
 			return nil, err
 		}

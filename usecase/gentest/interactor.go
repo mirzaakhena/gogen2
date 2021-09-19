@@ -2,8 +2,10 @@ package gentest
 
 import (
 	"context"
+	"fmt"
 	"github.com/mirzaakhena/gogen2/domain/entity"
-	"github.com/mirzaakhena/gogen2/usecase/genlog"
+	"github.com/mirzaakhena/gogen2/domain/service"
+	"github.com/mirzaakhena/gogen2/domain/vo"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -24,42 +26,55 @@ func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*In
 
 	res := &InportResponse{}
 
-	packagePath := r.outport.GetPackagePath(ctx)
-
 	// create log
 	{
-		_, err := genlog.NewUsecase(r.outport).Execute(ctx, genlog.InportRequest{})
+		err := service.ConstructLog(ctx, r.outport)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	obj, err := entity.NewObjTesting(req.TestName, req.UsecaseName, packagePath)
+	objUsecase, err := entity.NewObjUsecase(req.UsecaseName)
 	if err != nil {
 		return nil, err
 	}
 
+	obj, err := entity.NewObjTesting(req.TestName, *objUsecase)
+	if err != nil {
+		return nil, err
+	}
+
+	//err = obj.FillOutport(packagePath, outportMethods)
+	//if err != nil {
+	//	return nil, err
+	//}
+
 	// create interactor_test.go
-	{
-		outputFile := obj.GetTestFileName()
 
-		if r.outport.IsFileExist(ctx, outputFile) {
-			res.Message = "file test already exists"
-			return nil, nil
-		}
+	outputFile := entity.GetTestFileName(*obj)
 
-		testTemplateFile := r.outport.GetTestTemplate(ctx)
-		err := r.outport.WriteFile(ctx, testTemplateFile, outputFile, obj.GetData())
-		if err != nil {
-			return nil, err
-		}
+	if r.outport.IsFileExist(ctx, outputFile) {
+		res.Message = fmt.Sprintf("file test %s already exists", req.TestName)
+		return res, nil
+	}
 
-		// reformat interactor.go
-		err = r.outport.Reformat(ctx, outputFile)
-		if err != nil {
-			return nil, err
-		}
+	packagePath := r.outport.GetPackagePath(ctx)
 
+	outportMethods, err := vo.NewOutportMethods(req.UsecaseName, packagePath)
+	if err != nil {
+		return nil, err
+	}
+
+	testTemplateFile := r.outport.GetTestTemplate(ctx)
+	err = r.outport.WriteFile(ctx, testTemplateFile, outputFile, obj.GetData(packagePath, outportMethods))
+	if err != nil {
+		return nil, err
+	}
+
+	// reformat interactor.go
+	err = r.outport.Reformat(ctx, outputFile, nil)
+	if err != nil {
+		return nil, err
 	}
 
 	return res, nil

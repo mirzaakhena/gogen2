@@ -17,14 +17,14 @@ type ObjDataEntity struct {
 	EntityName string
 }
 
-func NewObjEntity(usecaseName string) (*ObjEntity, error) {
+func NewObjEntity(entityName string) (*ObjEntity, error) {
 
-	if usecaseName == "" {
+	if entityName == "" {
 		return nil, apperror.EntityNameMustNotEmpty
 	}
 
 	var obj ObjEntity
-	obj.EntityName = vo.Naming(usecaseName)
+	obj.EntityName = vo.Naming(entityName)
 
 	return &obj, nil
 }
@@ -35,19 +35,19 @@ func (o ObjEntity) GetData() *ObjDataEntity {
 	}
 }
 
-func (o ObjEntity) GetRootFolderName() string {
+func GetEntityRootFolderName() string {
 	return fmt.Sprintf("domain/entity")
 }
 
-func (o ObjEntity) GetEntityFileName() string {
-	return fmt.Sprintf("%s/%s.go", o.GetRootFolderName(), o.EntityName)
+func GetEntityFileName(o ObjEntity) string {
+	return fmt.Sprintf("%s/%s.go", GetEntityRootFolderName(), o.EntityName)
 }
 
 func (o ObjEntity) IsExist() (bool, error) {
 
 	fset := token.NewFileSet()
 
-	pkgs, err := parser.ParseDir(fset, o.GetRootFolderName(), nil, parser.ParseComments)
+	pkgs, err := parser.ParseDir(fset, GetEntityRootFolderName(), nil, parser.ParseComments)
 	if err != nil {
 		return false, err
 	}

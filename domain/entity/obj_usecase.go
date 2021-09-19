@@ -6,8 +6,11 @@ import (
   "github.com/mirzaakhena/gogen2/domain/vo"
 )
 
+const (
+  OutportInterfaceName = "Outport"
+)
+
 type ObjUsecase struct {
-  PackagePath string
   UsecaseName vo.Naming
 }
 
@@ -16,7 +19,7 @@ type ObjDataUsecase struct {
   UsecaseName string
 }
 
-func NewObjUsecase(usecaseName, packagePath string) (*ObjUsecase, error) {
+func NewObjUsecase(usecaseName string) (*ObjUsecase, error) {
 
   if usecaseName == "" {
     return nil, apperror.UsecaseNameMustNotEmpty
@@ -24,30 +27,29 @@ func NewObjUsecase(usecaseName, packagePath string) (*ObjUsecase, error) {
 
   var obj ObjUsecase
   obj.UsecaseName = vo.Naming(usecaseName)
-  obj.PackagePath = packagePath
 
   return &obj, nil
 }
 
-func (o ObjUsecase) GetData() *ObjDataUsecase {
+func (o ObjUsecase) GetData(PackagePath string) *ObjDataUsecase {
   return &ObjDataUsecase{
-    PackagePath: o.PackagePath,
+    PackagePath: PackagePath,
     UsecaseName: o.UsecaseName.String(),
   }
 }
 
-func (o ObjUsecase) GetRootFolderName() string {
+func GetUsecaseRootFolderName(o ObjUsecase) string {
   return fmt.Sprintf("usecase/%s", o.UsecaseName.LowerCase())
 }
 
-func (o ObjUsecase) GetInportFileName() string {
-  return fmt.Sprintf("%s/inport.go", o.GetRootFolderName())
+func GetInportFileName(o ObjUsecase) string {
+  return fmt.Sprintf("%s/inport.go", GetUsecaseRootFolderName(o))
 }
 
-func (o ObjUsecase) GetOutportFileName() string {
-  return fmt.Sprintf("%s/outport.go", o.GetRootFolderName())
+func GetOutportFileName(o ObjUsecase) string {
+  return fmt.Sprintf("%s/outport.go", GetUsecaseRootFolderName(o))
 }
 
-func (o ObjUsecase) GetInteractorFileName() string {
-  return fmt.Sprintf("%s/interactor.go", o.GetRootFolderName())
+func GetInteractorFileName(o ObjUsecase) string {
+  return fmt.Sprintf("%s/interactor.go", GetUsecaseRootFolderName(o))
 }

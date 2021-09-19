@@ -22,7 +22,10 @@ func (r *Controller) genRepositoryHandler(inputPort genrepository.Inport) func(.
     var req genrepository.InportRequest
     req.RepositoryName = commands[0]
     req.EntityName = commands[1]
-    req.UsecaseName = commands[2]
+
+    if len(commands) >= 3 {
+      req.UsecaseName = commands[2]
+    }
 
     _, err := inputPort.Execute(ctx, req)
     if err != nil {

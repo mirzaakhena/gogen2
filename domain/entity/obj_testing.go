@@ -3,14 +3,12 @@ package entity
 import (
   "fmt"
   "github.com/mirzaakhena/gogen2/domain/vo"
-  "strings"
 )
 
+// ObjTesting depend on (which) usecase that want to be tested
 type ObjTesting struct {
-  PackagePath string
-  UsecaseName vo.Naming
   TestName    vo.Naming
-  Methods     vo.OutportMethods
+  ObjUsecase ObjUsecase
 }
 
 type ObjDataTesting struct {
@@ -20,37 +18,24 @@ type ObjDataTesting struct {
   Methods     vo.OutportMethods
 }
 
-func NewObjTesting(testName, usecaseName, packagePath string) (*ObjTesting, error) {
+func NewObjTesting(testName string, objUsecase ObjUsecase) (*ObjTesting, error) {
 
   var obj ObjTesting
   obj.TestName = vo.Naming(testName)
-  obj.UsecaseName = vo.Naming(usecaseName)
-  obj.PackagePath = packagePath
-
-  err := obj.Methods.ReadOutport(usecaseName, packagePath)
-  if err != nil {
-    return nil, err
-  }
-
-  // Little hacky for replace the context.Context{} with ctx variable
-  for _, m := range obj.Methods {
-    if strings.HasPrefix(strings.TrimSpace(m.DefaultParamVal), `context.Context{}`) {
-      m.DefaultParamVal = strings.ReplaceAll(m.DefaultParamVal, `context.Context{}`, "ctx")
-    }
-  }
+  obj.ObjUsecase = objUsecase
 
   return &obj, nil
 }
 
-func (o ObjTesting) GetData() *ObjDataTesting {
+func (o ObjTesting) GetData(PackagePath string, outportMethods vo.OutportMethods) *ObjDataTesting {
   return &ObjDataTesting{
-    PackagePath: o.PackagePath,
-    UsecaseName: o.UsecaseName.String(),
+    PackagePath: PackagePath,
+    UsecaseName: o.ObjUsecase.UsecaseName.String(),
     TestName:    o.TestName.LowerCase(),
-    Methods:     o.Methods,
+    Methods:     outportMethods,
   }
 }
 
-func (o ObjTesting) GetTestFileName() string {
-  return fmt.Sprintf("usecase/%s/testcase_%s_test.go", o.UsecaseName.LowerCase(), o.TestName.LowerCase())
+func GetTestFileName(o ObjTesting) string {
+  return fmt.Sprintf("%s/testcase_%s_test.go", GetUsecaseRootFolderName(o.ObjUsecase), o.TestName.LowerCase())
 }
