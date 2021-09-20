@@ -3,6 +3,7 @@ package genrepository
 import (
 	"context"
 	"github.com/mirzaakhena/gogen2/domain/entity"
+	"github.com/mirzaakhena/gogen2/domain/service"
 	"github.com/mirzaakhena/gogen2/usecase/genentity"
 )
 
@@ -23,6 +24,8 @@ func NewUsecase(outputPort Outport) Inport {
 func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest) (*InportResponse, error) {
 
 	res := &InportResponse{}
+
+	service.ConstructApplication(ctx, r.outport)
 
 	obj, err := entity.NewObjRepository(req.RepositoryName, req.EntityName, req.UsecaseName)
 	if err != nil {

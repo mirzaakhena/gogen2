@@ -1,8 +1,8 @@
 package prod
 
 import (
-  "context"
-  "github.com/mirzaakhena/gogen2/infrastructure/templates"
+	"context"
+	"github.com/mirzaakhena/gogen2/infrastructure/templates"
 )
 
 func (r *prodGateway) GetInportTemplate(ctx context.Context) string {

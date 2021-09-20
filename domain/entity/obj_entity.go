@@ -1,54 +1,54 @@
 package entity
 
 import (
-  "fmt"
-  "github.com/mirzaakhena/gogen2/application/apperror"
-  "github.com/mirzaakhena/gogen2/domain/vo"
-  "go/ast"
+	"fmt"
+	"github.com/mirzaakhena/gogen2/application/apperror"
+	"github.com/mirzaakhena/gogen2/domain/vo"
+	"go/ast"
 )
 
 type ObjEntity struct {
-  EntityName vo.Naming
+	EntityName vo.Naming
 }
 
 type ObjDataEntity struct {
-  EntityName string
+	EntityName string
 }
 
 func NewObjEntity(entityName string) (*ObjEntity, error) {
 
-  if entityName == "" {
-    return nil, apperror.EntityNameMustNotEmpty
-  }
+	if entityName == "" {
+		return nil, apperror.EntityNameMustNotEmpty
+	}
 
-  var obj ObjEntity
-  obj.EntityName = vo.Naming(entityName)
+	var obj ObjEntity
+	obj.EntityName = vo.Naming(entityName)
 
-  return &obj, nil
+	return &obj, nil
 }
 
 func (o ObjEntity) GetData() *ObjDataEntity {
-  return &ObjDataEntity{
-    EntityName: o.EntityName.String(),
-  }
+	return &ObjDataEntity{
+		EntityName: o.EntityName.String(),
+	}
 }
 
 func GetEntityRootFolderName() string {
-  return fmt.Sprintf("domain/entity")
+	return fmt.Sprintf("domain/entity")
 }
 
 func GetEntityFileName(o ObjEntity) string {
-  return fmt.Sprintf("%s/%s.go", GetEntityRootFolderName(), o.EntityName)
+	return fmt.Sprintf("%s/%s.go", GetEntityRootFolderName(), o.EntityName)
 }
 
 func (o ObjEntity) IsEntityExist() (bool, error) {
 
-  var isWantedType = func(expr ast.Expr) bool {
-    _, ok := expr.(*ast.StructType)
-    return ok
-  }
+	var isWantedType = func(expr ast.Expr) bool {
+		_, ok := expr.(*ast.StructType)
+		return ok
+	}
 
-  return IsExist(GetEntityRootFolderName(), o.EntityName.String(), isWantedType)
+	return IsExist(GetEntityRootFolderName(), o.EntityName.String(), isWantedType)
 }
 
 //func (o ObjEntity) IsEntityExist() (bool, error) {

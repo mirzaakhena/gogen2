@@ -1,35 +1,35 @@
 package commandline
 
 import (
-  "context"
-  "fmt"
-  "github.com/mirzaakhena/gogen2/infrastructure/log"
-  "github.com/mirzaakhena/gogen2/usecase/genusecase"
+	"context"
+	"fmt"
+	"github.com/mirzaakhena/gogen2/infrastructure/log"
+	"github.com/mirzaakhena/gogen2/usecase/genusecase"
 )
 
 // genTestHandler ...
 func (r *Controller) genUsecaseHandler(inputPort genusecase.Inport) func(...string) error {
 
-  return func(commands ...string) error {
+	return func(commands ...string) error {
 
-    ctx := log.Context(context.Background())
+		ctx := log.Context(context.Background())
 
-    if len(commands) == 0 {
-      err := fmt.Errorf("usecase name must not empty. `gogen usecase UsecaseName`")
-      return err
-    }
+		if len(commands) == 0 {
+			err := fmt.Errorf("usecase name must not empty. `gogen usecase UsecaseName`")
+			return err
+		}
 
-    usecaseName := commands[0]
+		usecaseName := commands[0]
 
-    var req genusecase.InportRequest
-    req.UsecaseName = usecaseName
+		var req genusecase.InportRequest
+		req.UsecaseName = usecaseName
 
-    _, err := inputPort.Execute(ctx, req)
-    if err != nil {
-      return err
-    }
+		_, err := inputPort.Execute(ctx, req)
+		if err != nil {
+			return err
+		}
 
-    return nil
+		return nil
 
-  }
+	}
 }

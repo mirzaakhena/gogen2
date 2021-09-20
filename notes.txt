@@ -1,2 +1,3 @@
 nambahinn transaction
 nambahin default gorm
+perbaiki error_func

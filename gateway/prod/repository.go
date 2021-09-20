@@ -33,7 +33,7 @@ func (r *prodGateway) GetRepositoryFunctionTemplate(ctx context.Context, repoNam
 
 func (r *prodGateway) GetInteractorRepoCallTemplate(ctx context.Context, repoName vo.Naming) (string, error) {
 
-	if repoName.HasOneOfThisPrefix("findone", "findfirst", "findlast", "getone")  {//
+	if repoName.HasOneOfThisPrefix("findone", "findfirst", "findlast", "getone") { //
 		return templates.RepoInjectInteractorFindOneFile, nil
 
 	}

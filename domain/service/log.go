@@ -12,7 +12,6 @@ type LogActionInterface interface {
 	GetLogImplementationTemplate(ctx context.Context) string
 }
 
-
 func ConstructLog(ctx context.Context, action LogActionInterface) error {
 
 	{

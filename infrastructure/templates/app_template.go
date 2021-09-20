@@ -59,3 +59,20 @@ var (
 	//go:embed default/domain/repository/repository_inject_remove._go
 	RepoInjectInteractorRemoveFile string
 )
+
+var (
+	//go:embed default/application/application._go
+	ApplicationFile string
+
+	//go:embed default/application/apperror/error_enum._go
+	ApplicationErrorEnumFile string
+
+	//go:embed default/application/apperror/error_func._go
+	ApplicationErrorFuncFile string
+
+	//go:embed default/application/apperror/error_template._go
+	ApplicationErrorTemplateFile string
+
+	//go:embed default/application/constant/constant._go
+	ApplicationConstantTemplateFile string
+)
