@@ -1,6 +1,6 @@
 package templates
 
-import _ "embed"
+import _ "embed" // used for embed file
 
 var (
 
