@@ -20,6 +20,7 @@ import (
 // ErrorType must not modified
 type ErrorType string
 
+// ErrorWithCode ...
 type ErrorWithCode interface {
 	error
 	Code() string
