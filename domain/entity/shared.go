@@ -7,11 +7,13 @@ import (
 	"strings"
 )
 
+// GetPackageName ...
 func GetPackageName(rootFolderName string) string {
 	i := strings.LastIndex(rootFolderName, "/")
 	return rootFolderName[i+1:]
 }
 
+// IsExist ...
 func IsExist(rootFolderName, typeName string, isWantedType func(expr ast.Expr) bool) (bool, error) {
 
 	fset := token.NewFileSet()

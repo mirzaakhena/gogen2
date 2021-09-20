@@ -11,6 +11,7 @@ type ObjTesting struct {
 	ObjUsecase ObjUsecase
 }
 
+// ObjDataTesting ...
 type ObjDataTesting struct {
 	PackagePath string
 	UsecaseName string
@@ -18,6 +19,7 @@ type ObjDataTesting struct {
 	Methods     vo.OutportMethods
 }
 
+// NewObjTesting ...
 func NewObjTesting(testName string, objUsecase ObjUsecase) (*ObjTesting, error) {
 
 	var obj ObjTesting
@@ -27,6 +29,7 @@ func NewObjTesting(testName string, objUsecase ObjUsecase) (*ObjTesting, error) 
 	return &obj, nil
 }
 
+// GetData ...
 func (o ObjTesting) GetData(PackagePath string, outportMethods vo.OutportMethods) *ObjDataTesting {
 	return &ObjDataTesting{
 		PackagePath: PackagePath,
@@ -36,6 +39,7 @@ func (o ObjTesting) GetData(PackagePath string, outportMethods vo.OutportMethods
 	}
 }
 
+// GetTestFileName ...
 func GetTestFileName(o ObjTesting) string {
 	return fmt.Sprintf("%s/testcase_%s_test.go", GetUsecaseRootFolderName(o.ObjUsecase), o.TestName.LowerCase())
 }

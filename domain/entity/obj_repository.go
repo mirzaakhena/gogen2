@@ -15,12 +15,14 @@ import (
 	"strings"
 )
 
+// ObjRepository ...
 type ObjRepository struct {
 	RepositoryName vo.Naming
 	ObjEntity      ObjEntity
 	ObjUsecase     ObjUsecase
 }
 
+// ObjDataRepository ...
 type ObjDataRepository struct {
 	PackagePath    string
 	RepositoryName string
@@ -28,6 +30,7 @@ type ObjDataRepository struct {
 	UsecaseName    string
 }
 
+// NewObjRepository ...
 func NewObjRepository(repositoryName, entityName, usecaseName string) (*ObjRepository, error) {
 
 	var obj ObjRepository
@@ -51,6 +54,7 @@ func NewObjRepository(repositoryName, entityName, usecaseName string) (*ObjRepos
 
 }
 
+// GetData ...
 func (o ObjRepository) GetData(PackagePath string) *ObjDataRepository {
 	return &ObjDataRepository{
 		PackagePath:    PackagePath,
@@ -60,14 +64,17 @@ func (o ObjRepository) GetData(PackagePath string) *ObjDataRepository {
 	}
 }
 
+// GetRepositoryRootFolderName ...
 func GetRepositoryRootFolderName() string {
 	return fmt.Sprintf("domain/repository")
 }
 
+// GetRepositoryFileName ...
 func GetRepositoryFileName() string {
 	return fmt.Sprintf("%s/repository.go", GetRepositoryRootFolderName())
 }
 
+// IsRepoExist ...
 func (o ObjRepository) IsRepoExist() (bool, error) {
 
 	var isWantedType = func(expr ast.Expr) bool {
@@ -79,54 +86,7 @@ func (o ObjRepository) IsRepoExist() (bool, error) {
 
 }
 
-//func (o ObjRepository) IsRepoExist() (bool, error) {
-//
-//	fset := token.NewFileSet()
-//
-//	pkgs, err := parser.ParseDir(fset, GetRepositoryRootFolderName(), nil, parser.ParseComments)
-//	if err != nil {
-//		return false, err
-//	}
-//
-//	// in every package
-//	for _, pkg := range pkgs {
-//
-//		// in every files
-//		for _, file := range pkg.Files {
-//
-//			// in every declaration like type, func, const
-//			for _, decl := range file.Decls {
-//
-//				// focus only to type
-//				gen, ok := decl.(*ast.GenDecl)
-//				if !ok || gen.Tok != token.TYPE {
-//					continue
-//				}
-//
-//				for _, specs := range gen.Specs {
-//
-//					ts, ok := specs.(*ast.TypeSpec)
-//					if !ok {
-//						continue
-//					}
-//
-//					// focus only to Interface Type
-//					if _, ok = ts.Type.(*ast.InterfaceType); !ok {
-//						continue
-//					}
-//
-//					// repo already exist, abort the command
-//					if ts.Name.String() == o.getRepositoryName() {
-//						return true, nil
-//					}
-//				}
-//			}
-//		}
-//	}
-//
-//	return false, nil
-//}
-
+// InjectCode ...
 func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 
 	// reopen the file
@@ -155,6 +115,7 @@ func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
+// InjectToOutport ...
 func (o ObjRepository) InjectToOutport() error {
 
 	fileReadPath := GetOutportFileName(o.ObjUsecase)
@@ -244,6 +205,10 @@ func (o ObjRepository) InjectToOutport() error {
 
 		// rewrite the outport
 		f, err := os.Create(fileReadPath)
+		if err != nil {
+			return err
+		}
+
 		if err := printer.Fprint(f, fset, file); err != nil {
 			return err
 		}
@@ -270,6 +235,7 @@ func (o ObjRepository) InjectToOutport() error {
 
 const injectedCodeLocation = "//!"
 
+// InjectToInteractor ...
 func (o ObjRepository) InjectToInteractor(injectedCode string) ([]byte, error) {
 
 	existingFile := GetInteractorFileName(o.ObjUsecase)

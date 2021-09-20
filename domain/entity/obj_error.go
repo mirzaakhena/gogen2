@@ -10,10 +10,12 @@ type ObjError struct {
 	ErrorName vo.Naming
 }
 
+// ObjDataError is object that used in template
 type ObjDataError struct {
 	ErrorName string
 }
 
+// NewObjError Constructor
 func NewObjError(errorName string) (*ObjError, error) {
 
 	if errorName == "" {
@@ -26,6 +28,7 @@ func NewObjError(errorName string) (*ObjError, error) {
 	return &obj, nil
 }
 
+// GetData ...
 func (o ObjError) GetData() *ObjDataError {
 	return &ObjDataError{
 		ErrorName: o.ErrorName.String(),

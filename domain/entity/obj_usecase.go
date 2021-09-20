@@ -7,18 +7,22 @@ import (
 )
 
 const (
+	// OutportInterfaceName ...
 	OutportInterfaceName = "Outport"
 )
 
+// ObjUsecase ...
 type ObjUsecase struct {
 	UsecaseName vo.Naming
 }
 
+// ObjDataUsecase ...
 type ObjDataUsecase struct {
 	PackagePath string
 	UsecaseName string
 }
 
+// NewObjUsecase ...
 func NewObjUsecase(usecaseName string) (*ObjUsecase, error) {
 
 	if usecaseName == "" {
@@ -31,6 +35,7 @@ func NewObjUsecase(usecaseName string) (*ObjUsecase, error) {
 	return &obj, nil
 }
 
+// GetData ...
 func (o ObjUsecase) GetData(PackagePath string) *ObjDataUsecase {
 	return &ObjDataUsecase{
 		PackagePath: PackagePath,
@@ -38,18 +43,22 @@ func (o ObjUsecase) GetData(PackagePath string) *ObjDataUsecase {
 	}
 }
 
+// GetUsecaseRootFolderName ...
 func GetUsecaseRootFolderName(o ObjUsecase) string {
 	return fmt.Sprintf("usecase/%s", o.UsecaseName.LowerCase())
 }
 
+// GetInportFileName ...
 func GetInportFileName(o ObjUsecase) string {
 	return fmt.Sprintf("%s/inport.go", GetUsecaseRootFolderName(o))
 }
 
+// GetOutportFileName ...
 func GetOutportFileName(o ObjUsecase) string {
 	return fmt.Sprintf("%s/outport.go", GetUsecaseRootFolderName(o))
 }
 
+// GetInteractorFileName ...
 func GetInteractorFileName(o ObjUsecase) string {
 	return fmt.Sprintf("%s/interactor.go", GetUsecaseRootFolderName(o))
 }
