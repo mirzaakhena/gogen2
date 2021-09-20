@@ -135,7 +135,7 @@ func (o ObjRepository) InjectToOutport() error {
 
 		// focus on type
 		gen, ok := decl.(*ast.GenDecl)
-		if !ok || gen.Tok != token.TYPE  {
+		if !ok || gen.Tok != token.TYPE {
 			continue
 		}
 
