@@ -5,6 +5,7 @@ import (
 	"github.com/mirzaakhena/gogen2/domain/entity"
 )
 
+// LogActionInterface ...
 type LogActionInterface interface {
 	CreateFolderIfNotExistService
 	WriteFileIfNotExistService
@@ -12,6 +13,7 @@ type LogActionInterface interface {
 	GetLogImplementationTemplate(ctx context.Context) string
 }
 
+// ConstructLog ...
 func ConstructLog(ctx context.Context, action LogActionInterface) error {
 
 	{

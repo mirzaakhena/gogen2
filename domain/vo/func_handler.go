@@ -6,6 +6,7 @@ import (
 	"go/ast"
 )
 
+// FuncHandler ...
 type FuncHandler struct {
 	PrefixExpression string //
 }

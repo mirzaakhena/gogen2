@@ -15,6 +15,7 @@ import (
 type basicUtilityGateway struct {
 }
 
+// CreateFolderIfNotExist ...
 func (r *basicUtilityGateway) CreateFolderIfNotExist(ctx context.Context, folderPath string) (bool, error) {
 	if r.IsFileExist(ctx, folderPath) {
 		return true, nil
@@ -25,6 +26,7 @@ func (r *basicUtilityGateway) CreateFolderIfNotExist(ctx context.Context, folder
 	return false, nil
 }
 
+// WriteFileIfNotExist ...
 func (r *basicUtilityGateway) WriteFileIfNotExist(ctx context.Context, templateFile, outputFilePath string, obj interface{}) (bool, error) {
 	if r.IsFileExist(ctx, outputFilePath) {
 		return true, nil
@@ -32,6 +34,7 @@ func (r *basicUtilityGateway) WriteFileIfNotExist(ctx context.Context, templateF
 	return false, r.WriteFile(ctx, templateFile, outputFilePath, obj)
 }
 
+// WriteFile ...
 func (r *basicUtilityGateway) WriteFile(ctx context.Context, templateFile, outputFilePath string, obj interface{}) error {
 	var buffer bytes.Buffer
 
@@ -57,6 +60,7 @@ func (r *basicUtilityGateway) WriteFile(ctx context.Context, templateFile, outpu
 	return nil
 }
 
+// IsFileExist ...
 func (r *basicUtilityGateway) IsFileExist(ctx context.Context, filepath string) bool {
 	_, err := os.Stat(filepath)
 	if err == nil {
@@ -68,6 +72,7 @@ func (r *basicUtilityGateway) IsFileExist(ctx context.Context, filepath string) 
 	return false
 }
 
+// Reformat ...
 func (r *basicUtilityGateway) Reformat(ctx context.Context, goFilename string, bytes []byte) error {
 
 	// reformat the import
@@ -84,6 +89,7 @@ func (r *basicUtilityGateway) Reformat(ctx context.Context, goFilename string, b
 	return nil
 }
 
+// GetPackagePath ...
 func (r *basicUtilityGateway) GetPackagePath(ctx context.Context) string {
 
 	var gomodPath string
@@ -120,6 +126,7 @@ func (r *basicUtilityGateway) GetPackagePath(ctx context.Context) string {
 
 }
 
+// PrintTemplate ...
 func (r *basicUtilityGateway) PrintTemplate(ctx context.Context, templateString string, x interface{}) (string, error) {
 
 	tpl, err := template.New("something").Funcs(FuncMap).Parse(templateString)

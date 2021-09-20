@@ -7,6 +7,7 @@ import (
 	"github.com/mirzaakhena/gogen2/usecase/genusecase"
 )
 
+// Controller ...
 type Controller struct {
 	CommandMap          map[string]func(...string) error
 	GenUsecaseInport    genusecase.Inport

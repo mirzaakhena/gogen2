@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// ApplicationActionInterface ...
 type ApplicationActionInterface interface {
 	CreateFolderIfNotExistService
 	WriteFileIfNotExistService
@@ -13,6 +14,7 @@ type ApplicationActionInterface interface {
 	GetApplicationTemplate(ctx context.Context) string
 }
 
+// ConstructApplication ...
 func ConstructApplication(ctx context.Context, action ApplicationActionInterface) error {
 
 	{

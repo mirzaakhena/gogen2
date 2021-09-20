@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// OutportMethods ...
 type OutportMethods []*method
 
 type method struct {
@@ -18,6 +19,7 @@ type method struct {
 	DefaultReturnVal string //
 }
 
+// NewOutportMethods ...
 func NewOutportMethods(usecaseName, packagePath string) (OutportMethods, error) {
 	fileReadPath := fmt.Sprintf("usecase/%s", strings.ToLower(usecaseName))
 

@@ -6,10 +6,12 @@ import (
 	"github.com/mirzaakhena/gogen2/infrastructure/templates"
 )
 
+// GetRepositoryTemplate ...
 func (r *prodGateway) GetRepositoryTemplate(ctx context.Context) string {
 	return templates.RepositoryFile
 }
 
+// GetRepositoryFunctionTemplate ...
 func (r *prodGateway) GetRepositoryFunctionTemplate(ctx context.Context, repoName vo.Naming) (string, error) {
 
 	if repoName.HasOneOfThisPrefix("save", "create", "add", "update") {
@@ -31,6 +33,7 @@ func (r *prodGateway) GetRepositoryFunctionTemplate(ctx context.Context, repoNam
 	return templates.RepositoryInterfaceFile, nil
 }
 
+// GetInteractorRepoCallTemplate ...
 func (r *prodGateway) GetInteractorRepoCallTemplate(ctx context.Context, repoName vo.Naming) (string, error) {
 
 	if repoName.HasOneOfThisPrefix("findone", "findfirst", "findlast", "getone") { //

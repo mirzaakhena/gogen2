@@ -19,6 +19,7 @@ type gogen2 struct {
 	commandlineController commandline.Controller
 }
 
+// NewGogen2 ...
 func NewGogen2() func() application.RegistryContract {
 	return func() application.RegistryContract {
 
@@ -41,6 +42,7 @@ func NewGogen2() func() application.RegistryContract {
 	}
 }
 
+// RunApplication ...
 func (r *gogen2) RunApplication() {
 	flag.Parse()
 	cmd := flag.Arg(0)
@@ -67,6 +69,7 @@ func (r *gogen2) RunApplication() {
 	}
 }
 
+// SetupController ...
 func (r *gogen2) SetupController() {
 	r.commandlineController.RegisterRouter()
 }

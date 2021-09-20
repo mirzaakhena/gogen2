@@ -5,6 +5,7 @@ import (
 	"github.com/mirzaakhena/gogen2/infrastructure/templates"
 )
 
+// GetTestTemplate ...
 func (r *prodGateway) GetTestTemplate(ctx context.Context) string {
 	return templates.TestFile
 }
