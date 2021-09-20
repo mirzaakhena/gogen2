@@ -133,13 +133,9 @@ func (o ObjRepository) InjectToOutport() error {
 	// check for every declaration
 	for _, decl := range file.Decls {
 
-		gen, ok := decl.(*ast.GenDecl)
-		if !ok {
-			continue
-		}
-
 		// focus on type
-		if gen.Tok != token.TYPE {
+		gen, ok := decl.(*ast.GenDecl)
+		if !ok || gen.Tok != token.TYPE  {
 			continue
 		}
 
@@ -191,42 +187,38 @@ func (o ObjRepository) InjectToOutport() error {
 					},
 				})
 
+				// TODO who is responsible to write a file? entity or gateway?
+				// i prefer to use gateway instead of entity
+
+				// rewrite the outport
+				f, err := os.Create(fileReadPath)
+				if err != nil {
+					return err
+				}
+
+				if err := printer.Fprint(f, fset, file); err != nil {
+					return err
+				}
+				err = f.Close()
+				if err != nil {
+					return err
+				}
+
+				// reformat and import
+				newBytes, err := imports.Process(fileReadPath, nil, nil)
+				if err != nil {
+					return err
+				}
+
+				if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
+					return err
+				}
+
 				// after injection no need to check anymore
 				break
 			}
 
 		}
-	}
-
-	if !isAlreadyInjectedBefore {
-
-		// TODO who is responsible to write a file? entity or gateway?
-		// i prefer to use gateway instead of entity
-
-		// rewrite the outport
-		f, err := os.Create(fileReadPath)
-		if err != nil {
-			return err
-		}
-
-		if err := printer.Fprint(f, fset, file); err != nil {
-			return err
-		}
-		err = f.Close()
-		if err != nil {
-			return err
-		}
-
-		// reformat and import
-		newBytes, err := imports.Process(fileReadPath, nil, nil)
-		if err != nil {
-			return err
-		}
-
-		if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
-			return err
-		}
-
 	}
 
 	return nil

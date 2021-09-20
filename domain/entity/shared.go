@@ -55,9 +55,11 @@ func IsExist(rootFolderName, typeName string, isWantedType func(expr ast.Expr) b
 					}
 
 					// entity already exist, abort the command
-					if ts.Name.String() == typeName {
-						return true, nil
+					if ts.Name.String() != typeName {
+						continue
 					}
+
+					return true, nil
 				}
 			}
 
