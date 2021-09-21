@@ -1,227 +1,298 @@
 package entity
 
 import (
-	"bufio"
-	"bytes"
-	"fmt"
-	"github.com/mirzaakhena/gogen2/domain/vo"
-	"go/ast"
-	"go/parser"
-	"go/printer"
-	"go/token"
-	"golang.org/x/tools/imports"
-	"io/ioutil"
-	"os"
-	"strings"
+  "bufio"
+  "bytes"
+  "fmt"
+  "github.com/mirzaakhena/gogen2/domain/vo"
+  "go/ast"
+  "go/printer"
+  "go/token"
+  "golang.org/x/tools/imports"
+  "io/ioutil"
+  "os"
+  "strings"
 )
 
 // ObjRepository ...
 type ObjRepository struct {
-	RepositoryName vo.Naming
-	ObjEntity      ObjEntity
-	ObjUsecase     ObjUsecase
+  RepositoryName vo.Naming
+  ObjEntity      ObjEntity
+  ObjUsecase     ObjUsecase
 }
 
 // ObjDataRepository ...
 type ObjDataRepository struct {
-	PackagePath    string
-	RepositoryName string
-	EntityName     string
-	UsecaseName    string
+  PackagePath    string
+  RepositoryName string
+  EntityName     string
+  UsecaseName    string
 }
 
 // NewObjRepository ...
 func NewObjRepository(repositoryName, entityName, usecaseName string) (*ObjRepository, error) {
 
-	var obj ObjRepository
-	obj.RepositoryName = vo.Naming(repositoryName)
+  var obj ObjRepository
+  obj.RepositoryName = vo.Naming(repositoryName)
 
-	uc, err := NewObjUsecase(usecaseName)
-	if err != nil {
-		return nil, err
-	}
+  uc, err := NewObjUsecase(usecaseName)
+  if err != nil {
+    return nil, err
+  }
 
-	obj.ObjUsecase = *uc
+  obj.ObjUsecase = *uc
 
-	et, err := NewObjEntity(entityName)
-	if err != nil {
-		return nil, err
-	}
+  et, err := NewObjEntity(entityName)
+  if err != nil {
+    return nil, err
+  }
 
-	obj.ObjEntity = *et
+  obj.ObjEntity = *et
 
-	return &obj, nil
+  return &obj, nil
 
 }
 
 // GetData ...
 func (o ObjRepository) GetData(PackagePath string) *ObjDataRepository {
-	return &ObjDataRepository{
-		PackagePath:    PackagePath,
-		RepositoryName: o.RepositoryName.String(),
-		EntityName:     o.ObjEntity.EntityName.String(),
-		UsecaseName:    o.ObjUsecase.UsecaseName.String(),
-	}
+  return &ObjDataRepository{
+    PackagePath:    PackagePath,
+    RepositoryName: o.RepositoryName.String(),
+    EntityName:     o.ObjEntity.EntityName.String(),
+    UsecaseName:    o.ObjUsecase.UsecaseName.String(),
+  }
 }
 
 // GetRepositoryRootFolderName ...
 func GetRepositoryRootFolderName() string {
-	return fmt.Sprintf("domain/repository")
+  return fmt.Sprintf("domain/repository")
 }
 
 // GetRepositoryFileName ...
 func GetRepositoryFileName() string {
-	return fmt.Sprintf("%s/repository.go", GetRepositoryRootFolderName())
+  return fmt.Sprintf("%s/repository.go", GetRepositoryRootFolderName())
 }
 
 // IsRepoExist ...
 func (o ObjRepository) IsRepoExist() (bool, error) {
-
-	var isWantedType = func(expr ast.Expr) bool {
-		_, ok := expr.(*ast.InterfaceType)
-		return ok
-	}
-
-	return IsExist(GetRepositoryRootFolderName(), o.getRepositoryName(), isWantedType)
-
+  fset := token.NewFileSet()
+  exist := IsExist2(fset,GetRepositoryRootFolderName(), func(file *ast.File, ts *ast.TypeSpec) bool {
+    _, ok := ts.Type.(*ast.InterfaceType)
+    return ok && ts.Name.String() == o.getRepositoryName()
+  })
+  return exist, nil
 }
 
 // InjectCode ...
 func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 
-	// reopen the file
-	file, err := os.Open(GetRepositoryFileName())
-	if err != nil {
-		return nil, err
-	}
+  // reopen the file
+  file, err := os.Open(GetRepositoryFileName())
+  if err != nil {
+    return nil, err
+  }
 
-	scanner := bufio.NewScanner(file)
-	var buffer bytes.Buffer
-	for scanner.Scan() {
-		row := scanner.Text()
+  scanner := bufio.NewScanner(file)
+  var buffer bytes.Buffer
+  for scanner.Scan() {
+    row := scanner.Text()
 
-		buffer.WriteString(row)
-		buffer.WriteString("\n")
-	}
+    buffer.WriteString(row)
+    buffer.WriteString("\n")
+  }
 
-	if err := file.Close(); err != nil {
-		return nil, err
-	}
+  if err := file.Close(); err != nil {
+    return nil, err
+  }
 
-	// write the template in the end of file
-	buffer.WriteString(repoTemplateCode)
-	buffer.WriteString("\n")
+  // write the template in the end of file
+  buffer.WriteString(repoTemplateCode)
+  buffer.WriteString("\n")
 
-	return buffer.Bytes(), nil
+  return buffer.Bytes(), nil
 }
 
 // InjectToOutport ...
 func (o ObjRepository) InjectToOutport() error {
 
-	fileReadPath := GetOutportFileName(o.ObjUsecase)
+  fset := token.NewFileSet()
 
-	// read the outport file directly
-	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, fileReadPath, nil, parser.ParseComments)
-	if err != nil {
-		return err
-	}
+  var iFace *ast.InterfaceType
+  var file *ast.File
 
-	// assume never injected before
-	isAlreadyInjectedBefore := false
+  isAlreadyInjectedBefore := IsExist2(fset, GetUsecaseRootFolderName(o.ObjUsecase), func(f *ast.File, ts *ast.TypeSpec) bool {
+    interfaceType, ok := ts.Type.(*ast.InterfaceType)
 
-	// check for every declaration
-	for _, decl := range file.Decls {
+    file = f
+    iFace = interfaceType
 
-		// focus on type
-		gen, ok := decl.(*ast.GenDecl)
-		if !ok || gen.Tok != token.TYPE {
-			continue
-		}
+    if ok && ts.Name.String() == OutportInterfaceName {
 
-		for _, specs := range gen.Specs {
+      // trace every method to find something line like `repository.SaveOrderRepo`
+      for _, meth := range iFace.Methods.List {
 
-			ts, ok := specs.(*ast.TypeSpec)
-			if !ok {
-				continue
-			}
+        selType, ok := meth.Type.(*ast.SelectorExpr)
 
-			// focus on interface type
-			iFace, ok := ts.Type.(*ast.InterfaceType)
-			if !ok {
-				continue
-			}
+        // if interface already injected (SaveOrderRepo) then abort the mission
+        if ok && selType.Sel.String() == o.getRepositoryName() {
+          return true
+        }
+      }
+    }
+    return false
+  })
 
-			// find the specific outport interface with specific "Standards" name
-			if ts.Name.String() != OutportInterfaceName {
-				continue
-			}
+  // if it is already injected, then nothing to do
+  if isAlreadyInjectedBefore {
+    return nil
+  }
 
-			// trace every method to find something line like `repository.SaveOrderRepo`
-			for _, meth := range iFace.Methods.List {
+  // we want to inject it now
+  // add new repository to outport interface
+  iFace.Methods.List = append(iFace.Methods.List, &ast.Field{
+    Type: &ast.SelectorExpr{
+      X: &ast.Ident{
+        Name: GetPackageName(GetRepositoryRootFolderName()),
+      },
+      Sel: &ast.Ident{
+        Name: o.getRepositoryName(),
+      },
+    },
+  })
 
-				selType, ok := meth.Type.(*ast.SelectorExpr)
+  // TODO who is responsible to write a file? entity or gateway?
+  // i prefer to use gateway instead of entity
 
-				// if interface already injected then abort the mission
-				if ok && selType.Sel.String() == o.getRepositoryName() {
-					isAlreadyInjectedBefore = true
+  fileReadPath := fset.Position(file.Pos()).Filename
 
-					// it is already injected.
-					// here we exit from loop for check other spec, but it is the only one spec we have
-					break
-				}
+  // rewrite the outport
+  f, err := os.Create(fileReadPath)
+  if err != nil {
+    return err
+  }
 
-			}
+  if err := printer.Fprint(f, fset, file); err != nil {
+    return err
+  }
+  err = f.Close()
+  if err != nil {
+    return err
+  }
 
-			// we want to inject it now
-			if !isAlreadyInjectedBefore {
-				// add new repository to outport interface
-				iFace.Methods.List = append(iFace.Methods.List, &ast.Field{
-					Type: &ast.SelectorExpr{
-						X: &ast.Ident{
-							Name: GetPackageName(GetRepositoryRootFolderName()),
-						},
-						Sel: &ast.Ident{
-							Name: o.getRepositoryName(),
-						},
-					},
-				})
+  // reformat and import
+  newBytes, err := imports.Process(fileReadPath, nil, nil)
+  if err != nil {
+    return err
+  }
 
-				// TODO who is responsible to write a file? entity or gateway?
-				// i prefer to use gateway instead of entity
+  if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
+    return err
+  }
 
-				// rewrite the outport
-				f, err := os.Create(fileReadPath)
-				if err != nil {
-					return err
-				}
+  //fileReadPath := GetOutportFileName(o.ObjUsecase)
+  //
+  //// read the outport file directly
+  //fset := token.NewFileSet()
+  //file, err := parser.ParseFile(fset, fileReadPath, nil, parser.ParseComments)
+  //if err != nil {
+  //  return err
+  //}
+  //
+  //// assume never injected before
+  //isAlreadyInjectedBefore := false
+  //
+  //// check for every declaration
+  //for _, decl := range file.Decls {
+  //
+  //  // focus on type
+  //  gen, ok := decl.(*ast.GenDecl)
+  //  if !ok || gen.Tok != token.TYPE {
+  //    continue
+  //  }
+  //
+  //  for _, specs := range gen.Specs {
+  //
+  //    ts, ok := specs.(*ast.TypeSpec)
+  //    if !ok {
+  //      continue
+  //    }
+  //
+  //    // focus on interface type
+  //    iFace, ok := ts.Type.(*ast.InterfaceType)
+  //    if !ok {
+  //      continue
+  //    }
+  //
+  //    // find the specific outport interface with specific "Standards" name
+  //    if ts.Name.String() != OutportInterfaceName {
+  //      continue
+  //    }
+  //
+  //    // trace every method to find something line like `repository.SaveOrderRepo`
+  //    for _, meth := range iFace.Methods.List {
+  //
+  //      selType, ok := meth.Type.(*ast.SelectorExpr)
+  //
+  //      // if interface already injected then abort the mission
+  //      if ok && selType.Sel.String() == o.getRepositoryName() {
+  //        isAlreadyInjectedBefore = true
+  //
+  //        // it is already injected.
+  //        // here we exit from loop for check other spec, but it is the only one spec we have
+  //        break
+  //      }
+  //
+  //    }
+  //    fmt.Printf(">>>>>> already injected : %v\n", isAlreadyInjectedBefore)
+  //    // we want to inject it now
+  //    if !isAlreadyInjectedBefore {
+  //      // add new repository to outport interface
+  //      iFace.Methods.List = append(iFace.Methods.List, &ast.Field{
+  //        Type: &ast.SelectorExpr{
+  //          X: &ast.Ident{
+  //            Name: GetPackageName(GetRepositoryRootFolderName()),
+  //          },
+  //          Sel: &ast.Ident{
+  //            Name: o.getRepositoryName(),
+  //          },
+  //        },
+  //      })
+  //
+  //      // TODO who is responsible to write a file? entity or gateway?
+  //      // i prefer to use gateway instead of entity
+  //
+  //      // rewrite the outport
+  //      f, err := os.Create(fileReadPath)
+  //      if err != nil {
+  //        return err
+  //      }
+  //
+  //      if err := printer.Fprint(f, fset, file); err != nil {
+  //        return err
+  //      }
+  //      err = f.Close()
+  //      if err != nil {
+  //        return err
+  //      }
+  //
+  //      // reformat and import
+  //      newBytes, err := imports.Process(fileReadPath, nil, nil)
+  //      if err != nil {
+  //        return err
+  //      }
+  //
+  //      if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
+  //        return err
+  //      }
+  //
+  //      // after injection no need to check anymore
+  //      break
+  //    }
+  //
+  //  }
+  //}
 
-				if err := printer.Fprint(f, fset, file); err != nil {
-					return err
-				}
-				err = f.Close()
-				if err != nil {
-					return err
-				}
-
-				// reformat and import
-				newBytes, err := imports.Process(fileReadPath, nil, nil)
-				if err != nil {
-					return err
-				}
-
-				if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
-					return err
-				}
-
-				// after injection no need to check anymore
-				break
-			}
-
-		}
-	}
-
-	return nil
+  return nil
 
 }
 
@@ -230,57 +301,57 @@ const injectedCodeLocation = "//!"
 // InjectToInteractor ...
 func (o ObjRepository) InjectToInteractor(injectedCode string) ([]byte, error) {
 
-	existingFile := GetInteractorFileName(o.ObjUsecase)
+  existingFile := GetInteractorFileName(o.ObjUsecase)
 
-	// open interactor file
-	file, err := os.Open(existingFile)
-	if err != nil {
-		return nil, err
-	}
+  // open interactor file
+  file, err := os.Open(existingFile)
+  if err != nil {
+    return nil, err
+  }
 
-	needToInject := false
+  needToInject := false
 
-	scanner := bufio.NewScanner(file)
-	var buffer bytes.Buffer
-	for scanner.Scan() {
-		row := scanner.Text()
+  scanner := bufio.NewScanner(file)
+  var buffer bytes.Buffer
+  for scanner.Scan() {
+    row := scanner.Text()
 
-		// check the injected code in interactor
-		if strings.TrimSpace(row) == injectedCodeLocation {
+    // check the injected code in interactor
+    if strings.TrimSpace(row) == injectedCodeLocation {
 
-			needToInject = true
+      needToInject = true
 
-			//// we need to provide an error
-			//InitiateError()
+      //// we need to provide an error
+      //InitiateError()
 
-			// inject code
-			buffer.WriteString(injectedCode)
-			buffer.WriteString("\n")
+      // inject code
+      buffer.WriteString(injectedCode)
+      buffer.WriteString("\n")
 
-			continue
-		}
+      continue
+    }
 
-		buffer.WriteString(row)
-		buffer.WriteString("\n")
-	}
+    buffer.WriteString(row)
+    buffer.WriteString("\n")
+  }
 
-	// if no injected marker found, then abort the next step
-	if !needToInject {
-		return nil, nil
-	}
+  // if no injected marker found, then abort the next step
+  if !needToInject {
+    return nil, nil
+  }
 
-	if err := file.Close(); err != nil {
-		return nil, err
-	}
+  if err := file.Close(); err != nil {
+    return nil, err
+  }
 
-	// rewrite the file
-	if err := ioutil.WriteFile(existingFile, buffer.Bytes(), 0644); err != nil {
-		return nil, err
-	}
+  // rewrite the file
+  if err := ioutil.WriteFile(existingFile, buffer.Bytes(), 0644); err != nil {
+    return nil, err
+  }
 
-	return buffer.Bytes(), nil
+  return buffer.Bytes(), nil
 }
 
 func (o ObjRepository) getRepositoryName() string {
-	return fmt.Sprintf("%sRepo", o.RepositoryName)
+  return fmt.Sprintf("%sRepo", o.RepositoryName)
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/mirzaakhena/gogen2/application/apperror"
 	"github.com/mirzaakhena/gogen2/domain/vo"
 	"go/ast"
+	"go/token"
 )
 
 // ObjEntity ...
@@ -50,10 +51,18 @@ func GetEntityFileName(o ObjEntity) string {
 // IsEntityExist ...
 func (o ObjEntity) IsEntityExist() (bool, error) {
 
-	var isWantedType = func(expr ast.Expr) bool {
-		_, ok := expr.(*ast.StructType)
-		return ok
-	}
+	//var isWantedType = func(expr ast.Expr) bool {
+	//	_, ok := expr.(*ast.StructType)
+	//	return ok
+	//}
+	//
+	//return IsExist(GetEntityRootFolderName(), o.EntityName.String(), isWantedType)
 
-	return IsExist(GetEntityRootFolderName(), o.EntityName.String(), isWantedType)
+	fset := token.NewFileSet()
+	exist := IsExist2(fset,GetEntityRootFolderName(), func(file *ast.File, ts *ast.TypeSpec) bool {
+		_, ok := ts.Type.(*ast.StructType)
+		return ok && ts.Name.String() == o.EntityName.String()
+	})
+
+	return exist, nil
 }
