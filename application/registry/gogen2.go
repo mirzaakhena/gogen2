@@ -3,16 +3,15 @@ package registry
 import (
 	"context"
 	"flag"
-	"github.com/mirzaakhena/gogen2/usecase/genentity"
-	"github.com/mirzaakhena/gogen2/usecase/gengateway"
-	"github.com/mirzaakhena/gogen2/usecase/genrepository"
-	"github.com/mirzaakhena/gogen2/usecase/gentest"
-	"os"
-
 	"github.com/mirzaakhena/gogen2/application"
 	"github.com/mirzaakhena/gogen2/controller/commandline"
 	"github.com/mirzaakhena/gogen2/gateway/prod"
 	"github.com/mirzaakhena/gogen2/infrastructure/log"
+	"github.com/mirzaakhena/gogen2/usecase/genentity"
+	"github.com/mirzaakhena/gogen2/usecase/generror"
+	"github.com/mirzaakhena/gogen2/usecase/gengateway"
+	"github.com/mirzaakhena/gogen2/usecase/genrepository"
+	"github.com/mirzaakhena/gogen2/usecase/gentest"
 	"github.com/mirzaakhena/gogen2/usecase/genusecase"
 )
 
@@ -24,20 +23,18 @@ type gogen2 struct {
 func NewGogen2() func() application.RegistryContract {
 	return func() application.RegistryContract {
 
-		datasource, err := prod.NewProdGateway()
-		if err != nil {
-			log.Error(context.Background(), "%v", err.Error())
-			os.Exit(1)
-		}
+		datasource := prod.NewProdGateway()
 
 		return &gogen2{
 			commandlineController: commandline.Controller{
-				CommandMap:          make(map[string]func(...string) error, 0),
+				CommandMap: make(map[string]func(...string) error, 0),
+
 				GenUsecaseInport:    genusecase.NewUsecase(datasource),
 				GenTestInport:       gentest.NewUsecase(datasource),
 				GenEntityInport:     genentity.NewUsecase(datasource),
 				GenRepositoryInport: genrepository.NewUsecase(datasource),
 				GenGatewayInport:    gengateway.NewUsecase(datasource),
+				GenErrorInport:      generror.NewUsecase(datasource),
 			},
 		}
 

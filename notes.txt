@@ -1,3 +1,23 @@
 nambahinn transaction
 nambahin default gorm
 perbaiki error_func
+tambahkan const
+perbaiki enum
+
+usecase
+test
+entity
+repository
+application
+gateway
+
+error
+controller
+registry
+service
+valueobject
+valuestring
+enum
+init
+config
+

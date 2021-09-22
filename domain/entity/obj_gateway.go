@@ -64,10 +64,8 @@ func GetGatewayStructName(o ObjGateway) string {
 
 func (o ObjGateway) InjectToGateway(injectedCode string) ([]byte, error) {
 
-	gatewayFile := GetGatewayFileName(o)
-
 	// reopen the file
-	file, err := os.Open(gatewayFile)
+	file, err := os.Open(GetGatewayFileName(o))
 	if err != nil {
 		return nil, err
 	}
@@ -89,16 +87,6 @@ func (o ObjGateway) InjectToGateway(injectedCode string) ([]byte, error) {
 	// write the template in the end of file
 	buffer.WriteString(injectedCode)
 	buffer.WriteString("\n")
-
-	//// reformat and do import
-	//newBytes, err := imports.Process(gatewayFile, buffer.Bytes(), nil)
-	//if err != nil {
-	//  return err
-	//}
-	//
-	//if err := ioutil.WriteFile(gatewayFile, newBytes, 0644); err != nil {
-	//  return err
-	//}
 
 	return buffer.Bytes(), nil
 }

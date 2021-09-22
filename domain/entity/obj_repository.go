@@ -91,6 +91,11 @@ func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		if err := file.Close(); err != nil {
+			return
+		}
+	}()
 
 	scanner := bufio.NewScanner(file)
 	var buffer bytes.Buffer
@@ -99,10 +104,6 @@ func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
 
 		buffer.WriteString(row)
 		buffer.WriteString("\n")
-	}
-
-	if err := file.Close(); err != nil {
-		return nil, err
 	}
 
 	// write the template in the end of file
@@ -188,109 +189,6 @@ func (o ObjRepository) InjectToOutport() error {
 	if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
 		return err
 	}
-
-	//fileReadPath := GetOutportFileName(o.ObjUsecase)
-	//
-	//// read the outport file directly
-	//fset := token.NewFileSet()
-	//file, err := parser.ParseFile(fset, fileReadPath, nil, parser.ParseComments)
-	//if err != nil {
-	//  return err
-	//}
-	//
-	//// assume never injected before
-	//isAlreadyInjectedBefore := false
-	//
-	//// check for every declaration
-	//for _, decl := range file.Decls {
-	//
-	//  // focus on type
-	//  gen, ok := decl.(*ast.GenDecl)
-	//  if !ok || gen.Tok != token.TYPE {
-	//    continue
-	//  }
-	//
-	//  for _, specs := range gen.Specs {
-	//
-	//    ts, ok := specs.(*ast.TypeSpec)
-	//    if !ok {
-	//      continue
-	//    }
-	//
-	//    // focus on interface type
-	//    iFace, ok := ts.Type.(*ast.InterfaceType)
-	//    if !ok {
-	//      continue
-	//    }
-	//
-	//    // find the specific outport interface with specific "Standards" name
-	//    if ts.Name.String() != OutportInterfaceName {
-	//      continue
-	//    }
-	//
-	//    // trace every method to find something line like `repository.SaveOrderRepo`
-	//    for _, meth := range iFace.Methods.List {
-	//
-	//      selType, ok := meth.Type.(*ast.SelectorExpr)
-	//
-	//      // if interface already injected then abort the mission
-	//      if ok && selType.Sel.String() == o.getRepositoryName() {
-	//        isAlreadyInjectedBefore = true
-	//
-	//        // it is already injected.
-	//        // here we exit from loop for check other spec, but it is the only one spec we have
-	//        break
-	//      }
-	//
-	//    }
-	//    fmt.Printf(">>>>>> already injected : %v\n", isAlreadyInjectedBefore)
-	//    // we want to inject it now
-	//    if !isAlreadyInjectedBefore {
-	//      // add new repository to outport interface
-	//      iFace.Methods.List = append(iFace.Methods.List, &ast.Field{
-	//        Type: &ast.SelectorExpr{
-	//          X: &ast.Ident{
-	//            Name: GetPackageName(GetRepositoryRootFolderName()),
-	//          },
-	//          Sel: &ast.Ident{
-	//            Name: o.getRepositoryName(),
-	//          },
-	//        },
-	//      })
-	//
-	//      // TODO who is responsible to write a file? entity or gateway?
-	//      // i prefer to use gateway instead of entity
-	//
-	//      // rewrite the outport
-	//      f, err := os.Create(fileReadPath)
-	//      if err != nil {
-	//        return err
-	//      }
-	//
-	//      if err := printer.Fprint(f, fset, file); err != nil {
-	//        return err
-	//      }
-	//      err = f.Close()
-	//      if err != nil {
-	//        return err
-	//      }
-	//
-	//      // reformat and import
-	//      newBytes, err := imports.Process(fileReadPath, nil, nil)
-	//      if err != nil {
-	//        return err
-	//      }
-	//
-	//      if err := ioutil.WriteFile(fileReadPath, newBytes, 0644); err != nil {
-	//        return err
-	//      }
-	//
-	//      // after injection no need to check anymore
-	//      break
-	//    }
-	//
-	//  }
-	//}
 
 	return nil
 

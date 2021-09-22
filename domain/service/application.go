@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/mirzaakhena/gogen2/domain/entity"
 )
 
 // ApplicationActionInterface ...
@@ -18,14 +19,14 @@ type ApplicationActionInterface interface {
 func ConstructApplication(ctx context.Context, action ApplicationActionInterface) error {
 
 	{
-		_, _ = action.CreateFolderIfNotExist(ctx, "application/apperror")
+		_, _ = action.CreateFolderIfNotExist(ctx, entity.GetErrorRootFolderName())
 		_, _ = action.CreateFolderIfNotExist(ctx, "application/constant")
 		_, _ = action.CreateFolderIfNotExist(ctx, "application/registry")
 	}
 
-	errorEnum, errorFunc := action.GetErrorTemplate(ctx)
+	errorFunc, errorEnum := action.GetErrorTemplate(ctx)
 	{
-		outputFile := fmt.Sprintf("application/apperror/error_enum.go")
+		outputFile := entity.GetErrorEnumFileName()
 		_, err := action.WriteFileIfNotExist(ctx, errorEnum, outputFile, struct{}{})
 		if err != nil {
 			return err
@@ -33,7 +34,7 @@ func ConstructApplication(ctx context.Context, action ApplicationActionInterface
 	}
 
 	{
-		outputFile := fmt.Sprintf("application/apperror/error_func.go")
+		outputFile := entity.GetErrorFuncFileName()
 		_, err := action.WriteFileIfNotExist(ctx, errorFunc, outputFile, struct{}{})
 		if err != nil {
 			return err

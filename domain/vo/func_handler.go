@@ -77,7 +77,6 @@ func (r FuncHandler) processStruct(param *bytes.Buffer, t *ast.StructType) strin
 			}
 		}
 		param.WriteString(r.appendType(field.Type))
-		//fmt.Printf(">>> %v:%v:%v:%v\n", nParam, iList, nNames, c)
 
 		if c < nParam {
 			param.WriteString("; ")

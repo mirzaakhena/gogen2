@@ -25,7 +25,10 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
 
 	res := &InportResponse{}
 
-	service.ConstructApplication(ctx, r.outport)
+	err := service.ConstructApplication(ctx, r.outport)
+	if err != nil {
+		return nil, err
+	}
 
 	obj, err := entity.NewObjRepository(req.RepositoryName, req.EntityName, req.UsecaseName)
 	if err != nil {

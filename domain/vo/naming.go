@@ -48,6 +48,7 @@ func (r Naming) UpperCase() string {
 func (r Naming) LowerCase() string {
 	return util.LowerCase(string(r))
 }
+
 // SpaceCase is
 func (r Naming) SpaceCase() string {
 	return util.SpaceCase(string(r))

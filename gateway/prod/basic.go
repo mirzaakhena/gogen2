@@ -142,5 +142,3 @@ func (r *basicUtilityGateway) GetPackagePath(ctx context.Context) string {
 	return strings.Trim(gomodPath, "\"")
 
 }
-
-

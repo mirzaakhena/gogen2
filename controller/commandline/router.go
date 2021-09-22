@@ -2,6 +2,7 @@ package commandline
 
 import (
 	"github.com/mirzaakhena/gogen2/usecase/genentity"
+	"github.com/mirzaakhena/gogen2/usecase/generror"
 	"github.com/mirzaakhena/gogen2/usecase/gengateway"
 	"github.com/mirzaakhena/gogen2/usecase/genrepository"
 	"github.com/mirzaakhena/gogen2/usecase/gentest"
@@ -16,6 +17,7 @@ type Controller struct {
 	GenEntityInport     genentity.Inport
 	GenRepositoryInport genrepository.Inport
 	GenGatewayInport    gengateway.Inport
+	GenErrorInport      generror.Inport
 }
 
 // RegisterRouter registering all the router
@@ -25,4 +27,5 @@ func (r *Controller) RegisterRouter() {
 	r.CommandMap["entity"] = r.genEntityHandler(r.GenEntityInport)
 	r.CommandMap["repository"] = r.genRepositoryHandler(r.GenRepositoryInport)
 	r.CommandMap["gateway"] = r.genGatewayHandler(r.GenGatewayInport)
+	r.CommandMap["error"] = r.genErrorHandler(r.GenErrorInport)
 }

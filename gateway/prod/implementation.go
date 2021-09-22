@@ -5,8 +5,8 @@ type prodGateway struct {
 }
 
 // NewProdGateway ...
-func NewProdGateway() (*prodGateway, error) {
+func NewProdGateway() *prodGateway {
 	return &prodGateway{
 		basicUtilityGateway: &basicUtilityGateway{},
-	}, nil
+	}
 }

@@ -11,6 +11,7 @@ type Inport interface {
 
 // InportRequest is request payload to run the usecase GenError
 type InportRequest struct {
+	ErrorName string
 }
 
 // InportResponse is response payload after running the usecase GenError
