@@ -60,6 +60,23 @@ func (r *basicUtilityGateway) WriteFile(ctx context.Context, templateFile, outpu
 	return nil
 }
 
+// PrintTemplate ...
+func (r *basicUtilityGateway) PrintTemplate(ctx context.Context, templateString string, x interface{}) (string, error) {
+
+	tpl, err := template.New("something").Funcs(FuncMap).Parse(templateString)
+	if err != nil {
+		return "", err
+	}
+
+	var buffer bytes.Buffer
+	if err := tpl.Execute(&buffer, x); err != nil {
+		return "", err
+	}
+
+	return buffer.String(), nil
+
+}
+
 // IsFileExist ...
 func (r *basicUtilityGateway) IsFileExist(ctx context.Context, filepath string) bool {
 	_, err := os.Stat(filepath)
@@ -126,19 +143,4 @@ func (r *basicUtilityGateway) GetPackagePath(ctx context.Context) string {
 
 }
 
-// PrintTemplate ...
-func (r *basicUtilityGateway) PrintTemplate(ctx context.Context, templateString string, x interface{}) (string, error) {
 
-	tpl, err := template.New("something").Funcs(FuncMap).Parse(templateString)
-	if err != nil {
-		return "", err
-	}
-
-	var buffer bytes.Buffer
-	if err := tpl.Execute(&buffer, x); err != nil {
-		return "", err
-	}
-
-	return buffer.String(), nil
-
-}

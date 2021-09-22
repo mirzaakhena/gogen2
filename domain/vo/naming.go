@@ -1,9 +1,8 @@
 package vo
 
 import (
-	"regexp"
+	"github.com/mirzaakhena/gogen2/infrastructure/util"
 	"strings"
-	"unicode"
 )
 
 // Naming ...
@@ -37,64 +36,29 @@ func (r Naming) IsEmpty() bool {
 
 // CamelCase is
 func (r Naming) CamelCase() string {
-
-	name := string(r)
-
-	// hardcoded is bad
-	// But we can figure out later
-	{
-		if name == "IPAddress" {
-			return "ipAddress"
-		}
-
-		if name == "ID" {
-			return "id"
-		}
-	}
-
-	out := []rune(name)
-	out[0] = unicode.ToLower([]rune(name)[0])
-	return string(out)
+	return util.CamelCase(string(r))
 }
 
 // UpperCase is
 func (r Naming) UpperCase() string {
-	name := string(r)
-	return strings.ToUpper(name)
+	return util.UpperCase(string(r))
 }
 
 // LowerCase is
 func (r Naming) LowerCase() string {
-	name := string(r)
-	return strings.ToLower(name)
+	return util.LowerCase(string(r))
 }
-
-var matchFirstCapSpaceCase = regexp.MustCompile("(.)([A-Z][a-z]+)")
-var matchAllCapSpaceCase = regexp.MustCompile("([a-z0-9])([A-Z])")
-
 // SpaceCase is
 func (r Naming) SpaceCase() string {
-	str := string(r)
-
-	snake := matchFirstCapSpaceCase.ReplaceAllString(str, "${1} ${2}")
-	snake = matchAllCapSpaceCase.ReplaceAllString(snake, "${1} ${2}")
-	return strings.ToLower(snake)
+	return util.SpaceCase(string(r))
 }
 
 // PascalCase is
 func (r Naming) PascalCase() string {
-	name := string(r)
-	rs := []rune(name)
-	return strings.ToUpper(string(rs[0])) + string(rs[1:])
+	return util.PascalCase(string(r))
 }
-
-var matchFirstCapSnakeCase = regexp.MustCompile("(.)([A-Z][a-z]+)")
-var matchAllCapSnakeCase = regexp.MustCompile("([a-z0-9])([A-Z])")
 
 // SnakeCase is
 func (r Naming) SnakeCase() string {
-	str := string(r)
-	snake := matchFirstCapSnakeCase.ReplaceAllString(str, "${1}_${2}")
-	snake = matchAllCapSnakeCase.ReplaceAllString(snake, "${1}_${2}")
-	return strings.ToLower(snake)
+	return util.SnakeCase(string(r))
 }
