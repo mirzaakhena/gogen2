@@ -28,6 +28,8 @@ func NewObjError(errorName string) (*ObjError, error) {
 	return &obj, nil
 }
 
+// TODO add function is Exist
+
 // GetData ...
 func (o ObjError) GetData() *ObjDataError {
 	return &ObjDataError{

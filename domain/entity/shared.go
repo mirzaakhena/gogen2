@@ -69,7 +69,7 @@ func GetPackageName(rootFolderName string) string {
 //	return false, nil
 //}
 
-func IsExist2(fset *token.FileSet, rootFolderName string, foundExactType func(file *ast.File, ts *ast.TypeSpec) bool) bool {
+func IsExist(fset *token.FileSet, rootFolderName string, foundExactType func(file *ast.File, ts *ast.TypeSpec) bool) bool {
 
 	pkgs, err := parser.ParseDir(fset, rootFolderName, nil, parser.ParseComments)
 	if err != nil {

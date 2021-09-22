@@ -11,6 +11,8 @@ type Inport interface {
 
 // InportRequest is request payload to run the usecase GenGateway
 type InportRequest struct {
+	UsecaseName string //
+	GatewayName string //
 }
 
 // InportResponse is response payload after running the usecase GenGateway

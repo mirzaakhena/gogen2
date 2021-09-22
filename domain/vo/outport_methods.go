@@ -19,7 +19,7 @@ type method struct {
 	DefaultReturnVal string //
 }
 
-// NewOutportMethods ...
+// NewOutportMethods read the Outport interface and collect all method on it
 func NewOutportMethods(usecaseName, packagePath string) (OutportMethods, error) {
 	fileReadPath := fmt.Sprintf("usecase/%s", strings.ToLower(usecaseName))
 

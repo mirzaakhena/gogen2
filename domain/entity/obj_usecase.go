@@ -43,6 +43,8 @@ func (o ObjUsecase) GetData(PackagePath string) *ObjDataUsecase {
 	}
 }
 
+// TODO create new usecase will create new interactor
+
 // GetUsecaseRootFolderName ...
 func GetUsecaseRootFolderName(o ObjUsecase) string {
 	return fmt.Sprintf("usecase/%s", o.UsecaseName.LowerCase())

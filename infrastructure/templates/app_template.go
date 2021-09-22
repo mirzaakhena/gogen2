@@ -105,3 +105,14 @@ var (
 	//go:embed default/application/constant/constant._go
 	ApplicationConstantTemplateFile string
 )
+
+var (
+
+	// GatewayGormFile ...
+	//go:embed default/gateway/gorm/impl._go
+	GatewayGormFile string
+
+	// GatewayGormInjectMethodFile ...
+	//go:embed default/gateway/gorm/inject._go
+	GatewayGormInjectMethodFile string
+)

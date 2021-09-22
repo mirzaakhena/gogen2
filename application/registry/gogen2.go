@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/mirzaakhena/gogen2/usecase/genentity"
+	"github.com/mirzaakhena/gogen2/usecase/gengateway"
 	"github.com/mirzaakhena/gogen2/usecase/genrepository"
 	"github.com/mirzaakhena/gogen2/usecase/gentest"
 	"os"
@@ -36,6 +37,7 @@ func NewGogen2() func() application.RegistryContract {
 				GenTestInport:       gentest.NewUsecase(datasource),
 				GenEntityInport:     genentity.NewUsecase(datasource),
 				GenRepositoryInport: genrepository.NewUsecase(datasource),
+				GenGatewayInport:    gengateway.NewUsecase(datasource),
 			},
 		}
 
