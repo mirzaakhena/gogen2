@@ -141,7 +141,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   }
 
-  // inject router for binding
+  // inject router for register
   {
     templateCode := r.outport.GetRouterRegisterTemplate(ctx)
 

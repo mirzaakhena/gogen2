@@ -20,6 +20,6 @@ type Outport interface {
   GetInterceptorTemplate(ctx context.Context, framework string) string
   GetRouterTemplate(ctx context.Context, framework string) string
   GetHandlerTemplate(ctx context.Context, framework string) string
-  GetInportTemplate(ctx context.Context) string
+  GetRouterInportTemplate(ctx context.Context) string
   GetRouterRegisterTemplate(ctx context.Context) string
 }

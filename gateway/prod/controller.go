@@ -25,3 +25,6 @@ func (r *prodGateway) GetRouterRegisterTemplate(ctx context.Context) string {
   return templates.ControllerGinGonicRouterRegisterFile
 }
 
+func (r *prodGateway) GetRouterInportTemplate(ctx context.Context) string {
+  return templates.ControllerGinGonicRouterInportFile
+}
