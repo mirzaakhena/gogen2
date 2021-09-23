@@ -14,7 +14,7 @@ func (r *Controller) genUsecaseHandler(inputPort genusecase.Inport) func(...stri
 
 		ctx := log.Context(context.Background())
 
-		if len(commands) == 0 {
+		if len(commands) < 1 {
 			err := fmt.Errorf("usecase name must not empty. `gogen usecase UsecaseName`")
 			return err
 		}

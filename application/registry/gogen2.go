@@ -7,6 +7,7 @@ import (
 	"github.com/mirzaakhena/gogen2/controller/commandline"
 	"github.com/mirzaakhena/gogen2/gateway/prod"
 	"github.com/mirzaakhena/gogen2/infrastructure/log"
+	"github.com/mirzaakhena/gogen2/usecase/gencontroller"
 	"github.com/mirzaakhena/gogen2/usecase/genentity"
 	"github.com/mirzaakhena/gogen2/usecase/generror"
 	"github.com/mirzaakhena/gogen2/usecase/gengateway"
@@ -35,6 +36,7 @@ func NewGogen2() func() application.RegistryContract {
 				GenRepositoryInport: genrepository.NewUsecase(datasource),
 				GenGatewayInport:    gengateway.NewUsecase(datasource),
 				GenErrorInport:      generror.NewUsecase(datasource),
+				GenControllerInport: gencontroller.NewUsecase(datasource),
 			},
 		}
 
@@ -47,7 +49,7 @@ func (r *gogen2) RunApplication() {
 	cmd := flag.Arg(0)
 
 	if cmd == "" {
-		log.Error(context.Background(), "try gogen2 usecase CreateOrder")
+		log.Error(context.Background(), "try gogen2 usecase")
 		return
 	}
 

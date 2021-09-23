@@ -14,7 +14,7 @@ func (r *Controller) genEntityHandler(inputPort genentity.Inport) func(...string
 
 		ctx := log.Context(context.Background())
 
-		if len(commands) != 1 {
+		if len(commands) < 1 {
 			err := fmt.Errorf("invalid gogen entity command format. Try this `gogen entity EntityName`")
 			return err
 		}

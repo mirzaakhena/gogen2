@@ -14,7 +14,7 @@ func (r *Controller) genErrorHandler(inputPort generror.Inport) func(...string) 
 
 		ctx := log.Context(context.Background())
 
-		if len(commands) != 1 {
+		if len(commands) < 1 {
 			err := fmt.Errorf("invalid gogen error command format. Try this `gogen error ErrorName`")
 			return err
 		}

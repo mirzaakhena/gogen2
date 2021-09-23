@@ -85,32 +85,7 @@ func (o ObjRepository) IsRepoExist() (bool, error) {
 
 // InjectCode ...
 func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
-
-	// reopen the file
-	file, err := os.Open(GetRepositoryFileName())
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err := file.Close(); err != nil {
-			return
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	var buffer bytes.Buffer
-	for scanner.Scan() {
-		row := scanner.Text()
-
-		buffer.WriteString(row)
-		buffer.WriteString("\n")
-	}
-
-	// write the template in the end of file
-	buffer.WriteString(repoTemplateCode)
-	buffer.WriteString("\n")
-
-	return buffer.Bytes(), nil
+	return InjectCodeAtTheEndOfFile(GetRepositoryFileName(), repoTemplateCode)
 }
 
 // InjectToOutport ...

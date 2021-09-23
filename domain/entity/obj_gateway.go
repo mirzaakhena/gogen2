@@ -1,12 +1,9 @@
 package entity
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
 	"github.com/mirzaakhena/gogen2/application/apperror"
 	"github.com/mirzaakhena/gogen2/domain/vo"
-	"os"
 )
 
 // ObjGateway  depend on (which) usecase that want to be tested
@@ -63,30 +60,5 @@ func GetGatewayStructName(o ObjGateway) string {
 }
 
 func (o ObjGateway) InjectToGateway(injectedCode string) ([]byte, error) {
-
-	// reopen the file
-	file, err := os.Open(GetGatewayFileName(o))
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err := file.Close(); err != nil {
-			return
-		}
-	}()
-
-	scanner := bufio.NewScanner(file)
-	var buffer bytes.Buffer
-	for scanner.Scan() {
-		row := scanner.Text()
-
-		buffer.WriteString(row)
-		buffer.WriteString("\n")
-	}
-
-	// write the template in the end of file
-	buffer.WriteString(injectedCode)
-	buffer.WriteString("\n")
-
-	return buffer.Bytes(), nil
+	return InjectCodeAtTheEndOfFile(GetGatewayFileName(o), injectedCode)
 }

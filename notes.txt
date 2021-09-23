@@ -3,6 +3,9 @@ nambahin default gorm
 perbaiki error_func
 tambahkan const
 perbaiki enum
+create new usecase will create new interactor
+create new test will addinng new unexisting method
+tambahinn komen di tiap template
 
 usecase
 test
@@ -10,8 +13,8 @@ entity
 repository
 application
 gateway
-
 error
+
 controller
 registry
 service

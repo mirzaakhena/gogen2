@@ -116,3 +116,32 @@ var (
 	//go:embed default/gateway/gorm/inject._go
 	GatewayGormInjectMethodFile string
 )
+
+
+var (
+
+	//go:embed default/controller/gingonic/app-registry._go
+	ControllerGinGonicRegistryFile string
+
+	//go:embed default/controller/gingonic/handler-func._go
+	ControllerGinGonicHandlerFuncFile string
+
+	//go:embed default/controller/gingonic/handler-server._go
+	ControllerGinGonicHandlerServerFile string
+
+	//go:embed default/controller/gingonic/interceptor._go
+	ControllerGinGonicInterceptorFile string
+
+	//go:embed default/controller/gingonic/response._go
+	ControllerGinGonicResponseFile string
+
+	//go:embed default/controller/gingonic/router-inport._go
+	ControllerGinGonicRouterInportFile string
+
+	//go:embed default/controller/gingonic/router-struct._go
+	ControllerGinGonicRouterStructFile string
+
+	//go:embed default/controller/gingonic/router-register._go
+	ControllerGinGonicRouterRegisterFile string
+
+)

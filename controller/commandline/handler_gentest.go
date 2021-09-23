@@ -14,7 +14,7 @@ func (r *Controller) genTestHandler(inputPort gentest.Inport) func(...string) er
 
 		ctx := log.Context(context.Background())
 
-		if len(commands) != 2 {
+		if len(commands) < 2 {
 			err := fmt.Errorf("invalid gogen test command format. Try this `gogen test normal UsecaseName`")
 			return err
 		}

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"context"
+  "context"
 )
 
 // CreateFolderIfNotExistService ...
@@ -38,3 +38,4 @@ type IsFileExistService interface {
 type PrintTemplateService interface {
 	PrintTemplate(ctx context.Context, templateString string, x interface{}) (string, error)
 }
+
