@@ -127,18 +127,23 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   // inject inport to struct
   {
-    templateCode := r.outport.GetInportTemplate(ctx)
+    templateCode := r.outport.GetRouterInportTemplate(ctx)
 
     templateWithData, err := r.outport.PrintTemplate(ctx, templateCode, objCtrl.GetData(packagePath))
     if err != nil {
       return nil, err
     }
 
-    _, err = objCtrl.InjectInportToStruct(templateWithData)
+    bytes, err := objCtrl.InjectInportToStruct(templateWithData)
     if err != nil {
       return nil, err
     }
 
+    // reformat outport.go
+    err = r.outport.Reformat(ctx, entity.GetControllerRouterFileName(*objCtrl), bytes)
+    if err != nil {
+      return nil, err
+    }
   }
 
   // inject router for register
@@ -150,17 +155,17 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
       return nil, err
     }
 
-    _, err = objCtrl.InjectRouterBind(templateWithData)
+    bytes, err := objCtrl.InjectRouterBind(templateWithData)
     if err != nil {
       return nil, err
     }
 
-  }
+    // reformat outport.go
+    err = r.outport.Reformat(ctx, entity.GetControllerRouterFileName(*objCtrl), bytes)
+    if err != nil {
+      return nil, err
+    }
 
-  // reformat outport.go
-  err = r.outport.Reformat(ctx, entity.GetControllerRouterFileName(*objCtrl), nil)
-  if err != nil {
-    return nil, err
   }
 
   return res, nil
