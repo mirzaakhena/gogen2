@@ -1,11 +1,102 @@
-nambahinn transaction
+nambahin transaction
 nambahin default gorm
 perbaiki error_func
 tambahkan const
 perbaiki enum
+bisa pilih log library
 create new usecase will create new interactor
-create new test will addinng new unexisting method
-tambahinn komen di tiap template
+create new test will adding new unexisting method
+tambahin komen di tiap template
+
+
+pertannyaan
+- kenapa foldernya banyak banget?
+- kenapa usecase perlu dibuat sebagai package?
+- kenapa file inport, outport dan interactor dipisah? kan bisa dalam satu file?
+- kenapa Inport cuman boleh punya satu method?
+- kenapa Inport Request dan Response dijadikan struct?
+- kenapa Interactor hanya boleh memiliki satu Outport?
+- kenapa test case ada didalam usecase ?
+- kenapa interactor struct private?
+- kenapa outport hanya mengextend repository atau service? apakah bisa dibuat method langsung?
+- kenapa ada folder infrastructure dan untuk apa?
+- kenapa gateway dipisah kedalam beberapa folder? untuk apa?
+- kenapa domain hanya berisi entity, service, repository dan vo? dimana bounded context nya?
+- kenapa controller dipisah dengan nama controller? untuk apa?
+- kenapa interactor, response, router dan handler dipisah dengan file berbeda?
+- kenapa tiap handler dipisah-pisah pada file yang berbeda?
+- kenapa error di sentralisasi? bagaimana cara kerja dan kelebihannya?
+- kenapa constant disentralisasi
+- kenapa log hanya muncul pada controller dan gateway? bagaimana dengan usecase dan entity?
+- kenapa ada registry dan untuk apakah registry tersebut?
+- kenapa satu registry bisa punya banyak controller?
+- apakah satu controller hanya boleh menghandle satu usecase saja?
+- kenapa gak pake file config ?
+- apa fungsi controller dan RegisterRouter method ? kenapa gak bikin constructor?
+
+
+usecase
+    menerima nama usecase
+    akan membuat folder usecase/<namausecase>
+    membuat 3 file yaitu inport.go, outport.go dan interactor.go dibawah folder tersebut
+    next feature: jika dipanggil untuk kedua kalinya, maka akan membuat file interactor baru
+    dengan diberi tambahan index sesuai jumlah interactor dibelakang nama interactor baru tersebut
+
+test
+    menerima nama test dan nama usecase
+    akan membaca Outport yang berisi semua method yang dibutuhkan untuk menjalankan usecase tersebut
+    membuat file test dibawah folder usecase yang sesuai dengan nama testcase_<namatest>_test.go
+    nextfeature: jika dipanggil untuk kedua kalinya
+    maka akann menambahkan method yang mungkin baru saja ditambahkan di Outport usecase
+
+entity
+    menerima nama entity
+    membuat file entity dengan nama entity dibawah folder domain/entity/<namaentity>.go
+    jika dipanggil untuk kedua kalinya maka akan muncul pesan error
+
+error
+    menerima nama error
+    membuatkan struktur folder dibawah application/apperror
+    jika belum ada, membuat error_func.go file yang berisi fungsionalitas umum untuk error
+    jika belum ada, membuat error_enum.go file yang berisi koleksi error code dan message
+    jika file error_enum.go sudah ada maka hanya akan menambahkan error line nya saja
+    jika dipanggil untuk kedua kalinya maka akan muncul pesan error
+
+repository
+    menerima nama repository, nama entity dan nama usecase sebagai parameter opsional
+    jika file repository.go belum ada, maka akan membuat folder dan file domain/repository/repository.go
+    jika entity belum ada, maka akan membuatkan entity dibawah domain/entity
+    jika menerima nama usecase, maka akan menginjeksikan repo tersebut didalam struct Outport
+    jika diberi injection point didalam interactor, maka akan menginjeksikan code repository
+
+gateway
+    menerima nama gateway dan nama usecase
+    membaca Outport dari usecase dan mengkoleksi semua method dari Outport tersebut
+    jika belum ada, membuat folder dan file gateway/<namagateway>/implementation.go
+    membuat struct Gateway yang berisi semua method dari Outport usecase tersebut
+    jika dipanggil untuk kedua kalinya maka baca dan koleksi semua function yang sudah ada dari
+    struct Gateway tersebut, yang mana beberapa implementasi mungkin saja sudah dipindah ke file lain
+    perintah kedua kalinya ini hanya akan menambahkan function baru saja ke dalam implementation.go
+
+controller
+    menerima nama controller dan nama usecase
+    jika belum ada, membuat folder controller/<namacontroller>
+    jika belum ada, membuat file response.go
+    jika belum ada, membuat file interceptor.go
+    membuat file handler_<namausecase>.go
+    jika belum ada, membuat file router.go
+    menginjeksikan inport yang sesuai usecase kedalam struct Controller
+    menginjeksikan router yang sesuai kedalam method RegisterRouter
+
+registry
+    menerima nama registry dan nama controller
+    akan membaca semua usecase yang terdaftar dalam controller
+    coba membaca gateway, jika cuma 1 gateway, maka akan langsung dipakai
+    jika ada lebih dari 1 gateway, maka akan diminta untuk memilih
+    jika filenya sudah ada maka akan diberi pesan info saja
+
+
+one of the hardest thing in programming is naming things like variable, or class name
 
 usecase
 test
@@ -14,8 +105,8 @@ repository
 application
 gateway
 error
-
 controller
+
 registry
 service
 valueobject
@@ -24,3 +115,13 @@ enum
 init
 config
 
+
+AS lazy as possible
+Zero dependency
+No need to think about name file or conventions
+Increase readability
+allow you to do code modification for experimental purpose without changing the current implementation
+
+
+Usecase driven approach
+Private/internal struct
