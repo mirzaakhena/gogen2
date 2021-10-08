@@ -1,5 +1,5 @@
 nambahin transaction
-nambahin default gorm
+nambahin default gorm dan gin
 perbaiki error_func
 tambahkan const
 perbaiki enum
@@ -65,7 +65,7 @@ error
 repository
     menerima nama repository, nama entity dan nama usecase sebagai parameter opsional
     jika file repository.go belum ada, maka akan membuat folder dan file domain/repository/repository.go
-    jika entity belum ada, maka akan membuatkan entity dibawah domain/entity
+    jika entity belum ada, maka akan membuatkan entity dibawah domain/entity/<namaentity>.go
     jika menerima nama usecase, maka akan menginjeksikan repo tersebut didalam struct Outport
     jika diberi injection point didalam interactor, maka akan menginjeksikan code repository
 
@@ -80,11 +80,12 @@ gateway
 
 controller
     menerima nama controller dan nama usecase
-    jika belum ada, membuat folder controller/<namacontroller>
-    jika belum ada, membuat file response.go
-    jika belum ada, membuat file interceptor.go
-    membuat file handler_<namausecase>.go
-    jika belum ada, membuat file router.go
+    membuat folder controller/<namacontroller>
+    membuat file controller/controller.go berisi interface
+    membuat file controller/<namacontroller>/response.go
+    membuat file controller/<namacontroller>/interceptor.go
+    membuat file controller/<namacontroller>/handler_<namausecase>.go
+    membuat file controller/<namacontroller>/router.go
     menginjeksikan inport yang sesuai usecase kedalam struct Controller
     menginjeksikan router yang sesuai kedalam method RegisterRouter
 
@@ -94,6 +95,9 @@ registry
     coba membaca gateway, jika cuma 1 gateway, maka akan langsung dipakai
     jika ada lebih dari 1 gateway, maka akan diminta untuk memilih
     jika filenya sudah ada maka akan diberi pesan info saja
+    membuat folder application/registry
+    membuat file application/application.go berisi interface
+    membuat file application/<namaregistry>.go berisi implementation
 
 
 one of the hardest thing in programming is naming things like variable, or class name
@@ -115,13 +119,37 @@ enum
 init
 config
 
-
 AS lazy as possible
 Zero dependency
 No need to think about name file or conventions
 Increase readability
 allow you to do code modification for experimental purpose without changing the current implementation
-
+centralize configuration setting
 
 Usecase driven approach
 Private/internal struct
+
+start from usecase
+usecase say everything about the system
+usecase consistent structure
+usecase doesnot care what tech you use
+useccase said :
+    - call me however you like, you want to use restapi, commandline,
+        grpc, as webhook, pubsub subscriber/consumer,what tech you use,
+        i dont care!
+    - give me this data, i dont care whereever yoou get it from
+    - i will doing this, and i dont care how you implement it
+
+one repo many project as long as inn the same domain
+
+there is no performance issue, because it is not an engine.
+it is just a "well written code"
+
+you can implment trace id for link all of your service
+
+suitable for new project and revamp existing project per service
+
+convince everyone to use it!
+
+because i want to sleep better
+

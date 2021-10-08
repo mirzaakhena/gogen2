@@ -3,6 +3,7 @@ package entity
 import (
   "bufio"
   "bytes"
+  "context"
   "fmt"
   "github.com/mirzaakhena/gogen2/application/apperror"
   "github.com/mirzaakhena/gogen2/domain/vo"
@@ -10,11 +11,11 @@ import (
   "go/parser"
   "go/token"
   "os"
+  "strings"
 )
 
 type ObjController struct {
   ControllerName vo.Naming
-  ObjUsecase     ObjUsecase
 }
 
 // ObjDataController ...
@@ -24,7 +25,7 @@ type ObjDataController struct {
   ControllerName string
 }
 
-func NewObjController(controllerName string, objUsecase ObjUsecase) (*ObjController, error) {
+func NewObjController(controllerName string) (*ObjController, error) {
 
   if controllerName == "" {
     return nil, apperror.ControllerNameMustNotEmpty
@@ -32,17 +33,16 @@ func NewObjController(controllerName string, objUsecase ObjUsecase) (*ObjControl
 
   var obj ObjController
   obj.ControllerName = vo.Naming(controllerName)
-  obj.ObjUsecase = objUsecase
 
   return &obj, nil
 }
 
 // GetData ...
-func (o ObjController) GetData(PackagePath string) *ObjDataController {
+func (o ObjController) GetData(PackagePath string, ou ObjUsecase) *ObjDataController {
   return &ObjDataController{
     PackagePath:    PackagePath,
     ControllerName: o.ControllerName.String(),
-    UsecaseName:    o.ObjUsecase.UsecaseName.String(),
+    UsecaseName:    ou.UsecaseName.String(),
   }
 }
 
@@ -67,8 +67,8 @@ func GetControllerRouterFileName(o ObjController) string {
 }
 
 // GetControllerHandlerFileName ...
-func GetControllerHandlerFileName(o ObjController) string {
-  return fmt.Sprintf("%s/handler_%s.go", GetControllerRootFolderName(o), o.ObjUsecase.UsecaseName.LowerCase())
+func GetControllerHandlerFileName(oc ObjController, ou ObjUsecase) string {
+  return fmt.Sprintf("%s/handler_%s.go", GetControllerRootFolderName(oc), ou.UsecaseName.LowerCase())
 }
 
 func (o ObjController) InjectInportToStruct(templateWithData string) ([]byte, error) {
@@ -110,59 +110,57 @@ func (o ObjController) InjectInportToStruct(templateWithData string) ([]byte, er
 }
 
 func (o ObjController) InjectRouterBind(templateWithData string) ([]byte, error) {
-  {
 
-    controllerFile := GetControllerRouterFileName(o)
+  controllerFile := GetControllerRouterFileName(o)
 
-    routerLine, err := o.getBindRouterLine()
-    if err != nil {
-      return nil, err
-    }
-
-    //templateCode, err := util.PrintTemplate(templates.ControllerBindRouterGinFile, obj)
-    //if err != nil {
-    //  return err
-    //}
-
-    file, err := os.Open(controllerFile)
-    if err != nil {
-      return nil, err
-    }
-    defer func() {
-      if err := file.Close(); err != nil {
-        return
-      }
-    }()
-
-    scanner := bufio.NewScanner(file)
-    var buffer bytes.Buffer
-    line := 0
-    for scanner.Scan() {
-      row := scanner.Text()
-
-      if line == routerLine-1 {
-        buffer.WriteString(templateWithData)
-        buffer.WriteString("\n")
-      }
-
-      buffer.WriteString(row)
-      buffer.WriteString("\n")
-      line++
-    }
-
-    //// reformat and do import
-    //newBytes, err := imports.Process(controllerFile, buffer.Bytes(), nil)
-    //if err != nil {
-    //  return err
-    //}
-    //
-    //if err := ioutil.WriteFile(controllerFile, newBytes, 0644); err != nil {
-    //  return err
-    //}
-
-    return buffer.Bytes(), nil
-
+  routerLine, err := o.getBindRouterLine()
+  if err != nil {
+    return nil, err
   }
+
+  //templateCode, err := util.PrintTemplate(templates.ControllerBindRouterGinFile, obj)
+  //if err != nil {
+  //  return err
+  //}
+
+  file, err := os.Open(controllerFile)
+  if err != nil {
+    return nil, err
+  }
+  defer func() {
+    if err := file.Close(); err != nil {
+      return
+    }
+  }()
+
+  scanner := bufio.NewScanner(file)
+  var buffer bytes.Buffer
+  line := 0
+  for scanner.Scan() {
+    row := scanner.Text()
+
+    if line == routerLine-1 {
+      buffer.WriteString(templateWithData)
+      buffer.WriteString("\n")
+    }
+
+    buffer.WriteString(row)
+    buffer.WriteString("\n")
+    line++
+  }
+
+  //// reformat and do import
+  //newBytes, err := imports.Process(controllerFile, buffer.Bytes(), nil)
+  //if err != nil {
+  //  return err
+  //}
+  //
+  //if err := ioutil.WriteFile(controllerFile, newBytes, 0644); err != nil {
+  //  return err
+  //}
+
+  return buffer.Bytes(), nil
+
 }
 
 func (o ObjController) getInportLine() (int, error) {
@@ -250,4 +248,58 @@ func (o ObjController) getBindRouterLine() (int, error) {
 
   }
   return 0, fmt.Errorf("register router Not found")
+}
+
+
+
+func FindControllerByName(ctx context.Context, controllerName string) (*ObjGateway, error) {
+  folderName := fmt.Sprintf("controller/%s", strings.ToLower(controllerName))
+
+  fset := token.NewFileSet()
+  pkgs, err := parser.ParseDir(fset, folderName, nil, parser.ParseComments)
+  if err != nil {
+    return nil, err
+  }
+
+  for _, pkg := range pkgs {
+
+    // read file by file
+    for _, file := range pkg.Files {
+
+      // in every declaration like type, func, const
+      for _, decl := range file.Decls {
+
+        // focus only to type
+        gen, ok := decl.(*ast.GenDecl)
+        if !ok || gen.Tok != token.TYPE {
+          continue
+        }
+
+        for _, specs := range gen.Specs {
+
+          ts, ok := specs.(*ast.TypeSpec)
+          if !ok {
+            continue
+          }
+
+          if _, ok := ts.Type.(*ast.StructType); ok {
+
+            // check the specific struct name
+            if ts.Name.String() != gatewayStructName {
+              continue
+            }
+
+            return NewObjGateway(pkg.Name)
+            //inportLine = fset.Position(iStruct.Fields.Closing).Line
+            //return inportLine, nil
+          }
+        }
+
+      }
+
+    }
+
+  }
+
+  return nil, err
 }

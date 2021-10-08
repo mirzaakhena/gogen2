@@ -117,14 +117,19 @@ var (
 	GatewayGormInjectMethodFile string
 )
 
+var(
+
+	//go:embed default/application/registry/app-registry-gin._go
+	RegistryGingonicFile string
+)
+
+var(
+
+	//go:embed default/infrastructure/server/server-gin._go
+	ServerGinGonicFile string
+)
 
 var (
-
-	//go:embed default/controller/gingonic/app-registry._go
-	ControllerGinGonicRegistryFile string
-
-	//go:embed default/controller/gingonic/handler-server._go
-	ControllerGinGonicHandlerServerFile string
 
 	//go:embed default/controller/gingonic/handler-func._go
 	ControllerGinGonicHandlerFuncFile string

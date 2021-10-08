@@ -18,4 +18,5 @@ type InportRequest struct {
 
 // InportResponse is response payload after running the usecase GenRegistry
 type InportResponse struct {
+  Message string
 }

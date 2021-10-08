@@ -1,6 +1,6 @@
 
 {{range .Methods}}
-func (r *{{CamelCase $.GatewayName}}Gateway) {{.MethodName}}{{.MethodSignature}} {
+func (r *gateway) {{.MethodName}}{{.MethodSignature}} {
     log.Info(ctx, "called")
 
     return {{.DefaultReturnVal}}

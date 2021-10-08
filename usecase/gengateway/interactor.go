@@ -25,12 +25,7 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 
 	res := &InportResponse{}
 
-	objUsecase, err := entity.NewObjUsecase(req.UsecaseName)
-	if err != nil {
-		return nil, err
-	}
-
-	objGateway, err := entity.NewObjGateway(req.GatewayName, *objUsecase)
+	objGateway, err := entity.NewObjGateway(req.GatewayName)
 	if err != nil {
 		return nil, err
 	}

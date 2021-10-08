@@ -29,7 +29,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  objCtrl, err := entity.NewObjController(req.ControllerName, *objUsecase)
+  objCtrl, err := entity.NewObjController(req.ControllerName)
   if err != nil {
     return nil, err
   }
@@ -53,13 +53,15 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   framework := "gingonic"
 
+  objDataCtrl := objCtrl.GetData(packagePath, *objUsecase)
+
   // response.go
   {
     filename := entity.GetControllerResponseFileName(*objCtrl)
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetResponseTemplate(ctx)
 
-      err := r.outport.WriteFile(ctx, templateFile, filename, objCtrl.GetData(packagePath))
+      err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
       if err != nil {
         return nil, err
       }
@@ -77,7 +79,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetInterceptorTemplate(ctx, framework)
 
-      err := r.outport.WriteFile(ctx, templateFile, filename, objCtrl.GetData(packagePath))
+      err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
       if err != nil {
         return nil, err
       }
@@ -91,11 +93,11 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   // handler_xxx.go
   {
-    filename := entity.GetControllerHandlerFileName(*objCtrl)
+    filename := entity.GetControllerHandlerFileName(*objCtrl, *objUsecase)
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetHandlerTemplate(ctx, framework)
 
-      err := r.outport.WriteFile(ctx, templateFile, filename, objCtrl.GetData(packagePath))
+      err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
       if err != nil {
         return nil, err
       }
@@ -113,7 +115,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetRouterTemplate(ctx, framework)
 
-      err := r.outport.WriteFile(ctx, templateFile, filename, objCtrl.GetData(packagePath))
+      err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
       if err != nil {
         return nil, err
       }
@@ -129,7 +131,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
   {
     templateCode := r.outport.GetRouterInportTemplate(ctx)
 
-    templateWithData, err := r.outport.PrintTemplate(ctx, templateCode, objCtrl.GetData(packagePath))
+    templateWithData, err := r.outport.PrintTemplate(ctx, templateCode, objDataCtrl)
     if err != nil {
       return nil, err
     }
@@ -150,7 +152,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
   {
     templateCode := r.outport.GetRouterRegisterTemplate(ctx)
 
-    templateWithData, err := r.outport.PrintTemplate(ctx, templateCode, objCtrl.GetData(packagePath))
+    templateWithData, err := r.outport.PrintTemplate(ctx, templateCode, objDataCtrl)
     if err != nil {
       return nil, err
     }

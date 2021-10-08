@@ -1,15 +1,15 @@
 package {{LowerCase .GatewayName}}
 
-type {{CamelCase .GatewayName}}Gateway struct {
+type gateway struct {
 }
 
-// New{{PascalCase .GatewayName}}Gateway ...
-func New{{PascalCase .GatewayName}}Gateway() (*{{CamelCase .GatewayName}}Gateway, error) {
-	return &{{CamelCase .GatewayName}}Gateway{}, nil
+// NewGateway ...
+func NewGateway() (*gateway) {
+	return &gateway{}
 }
 
 {{range .Methods}}
-func (r *{{CamelCase $.GatewayName}}Gateway) {{.MethodName}}{{.MethodSignature}} {
+func (r *gateway) {{.MethodName}}{{.MethodSignature}} {
     log.Info(ctx, "called")
 
     return {{.DefaultReturnVal}}

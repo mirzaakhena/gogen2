@@ -1,15 +1,17 @@
 package application
 
+import "github.com/mirzaakhena/gogen2/controller"
+
 // RegistryContract ...
 type RegistryContract interface {
-	SetupController()
+	controller.Controller
 	RunApplication()
 }
 
 // Run ...
 func Run(rv RegistryContract) {
 	if rv != nil {
-		rv.SetupController()
+		rv.RegisterRouter()
 		rv.RunApplication()
 	}
 }
