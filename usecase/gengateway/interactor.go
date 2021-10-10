@@ -2,6 +2,7 @@ package gengateway
 
 import (
 	"context"
+
 	"github.com/mirzaakhena/gogen2/domain/entity"
 	"github.com/mirzaakhena/gogen2/domain/service"
 	"github.com/mirzaakhena/gogen2/domain/vo"
@@ -26,11 +27,6 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 	res := &InportResponse{}
 
 	objGateway, err := entity.NewObjGateway(req.GatewayName)
-	if err != nil {
-		return nil, err
-	}
-
-	err = service.ConstructApplication(ctx, r.outport)
 	if err != nil {
 		return nil, err
 	}

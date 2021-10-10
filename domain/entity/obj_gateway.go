@@ -54,12 +54,12 @@ func GetGatewayRootFolderName(o ObjGateway) string {
 
 // GetGatewayFileName ...
 func GetGatewayFileName(o ObjGateway) string {
-  return fmt.Sprintf("%s/implementation.go", GetGatewayRootFolderName(o))
+  return fmt.Sprintf("%s/gateway.go", GetGatewayRootFolderName(o))
 }
 
 // GetGatewayStructName ...
-func GetGatewayStructName(o ObjGateway) string {
-  return fmt.Sprintf("%sGateway", o.GatewayName.CamelCase())
+func GetGatewayStructName() string {
+  return fmt.Sprintf("gateway")
 }
 
 func (o ObjGateway) InjectToGateway(injectedCode string) ([]byte, error) {
@@ -99,11 +99,12 @@ func FindGatewayByName(gatewayName string) (*ObjGateway, error) {
           if _, ok := ts.Type.(*ast.StructType); ok {
 
             // check the specific struct name
-            if ts.Name.String() != gatewayStructName {
+            if !strings.HasSuffix(strings.ToLower(ts.Name.String()), gatewayStructName) {
               continue
             }
 
             return NewObjGateway(pkg.Name)
+
             //inportLine = fset.Position(iStruct.Fields.Closing).Line
             //return inportLine, nil
           }
@@ -115,10 +116,12 @@ func FindGatewayByName(gatewayName string) (*ObjGateway, error) {
 
   }
 
-  return nil, err
+  return nil, nil
 }
 
 func FindAllObjGateway() ([]*ObjGateway, error) {
+
+  gateways := make([]*ObjGateway, 0)
 
   dir, err := os.ReadDir("gateway")
   if err != nil {
@@ -126,15 +129,14 @@ func FindAllObjGateway() ([]*ObjGateway, error) {
   }
 
   for _, d := range dir {
-    name, err := FindGatewayByName(d.Name())
+    g, err := FindGatewayByName(d.Name())
     if err != nil {
       return nil, err
     }
 
-    fmt.Printf(">>>>>>>> %s\n", name)
+    gateways = append(gateways, g)
+
   }
 
-	return nil, nil
+  return gateways, nil
 }
-
-

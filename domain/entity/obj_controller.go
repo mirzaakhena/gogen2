@@ -3,7 +3,6 @@ package entity
 import (
   "bufio"
   "bytes"
-  "context"
   "fmt"
   "github.com/mirzaakhena/gogen2/application/apperror"
   "github.com/mirzaakhena/gogen2/domain/vo"
@@ -11,7 +10,6 @@ import (
   "go/parser"
   "go/token"
   "os"
-  "strings"
 )
 
 type ObjController struct {
@@ -252,54 +250,54 @@ func (o ObjController) getBindRouterLine() (int, error) {
 
 
 
-func FindControllerByName(ctx context.Context, controllerName string) (*ObjGateway, error) {
-  folderName := fmt.Sprintf("controller/%s", strings.ToLower(controllerName))
-
-  fset := token.NewFileSet()
-  pkgs, err := parser.ParseDir(fset, folderName, nil, parser.ParseComments)
-  if err != nil {
-    return nil, err
-  }
-
-  for _, pkg := range pkgs {
-
-    // read file by file
-    for _, file := range pkg.Files {
-
-      // in every declaration like type, func, const
-      for _, decl := range file.Decls {
-
-        // focus only to type
-        gen, ok := decl.(*ast.GenDecl)
-        if !ok || gen.Tok != token.TYPE {
-          continue
-        }
-
-        for _, specs := range gen.Specs {
-
-          ts, ok := specs.(*ast.TypeSpec)
-          if !ok {
-            continue
-          }
-
-          if _, ok := ts.Type.(*ast.StructType); ok {
-
-            // check the specific struct name
-            if ts.Name.String() != gatewayStructName {
-              continue
-            }
-
-            return NewObjGateway(pkg.Name)
-            //inportLine = fset.Position(iStruct.Fields.Closing).Line
-            //return inportLine, nil
-          }
-        }
-
-      }
-
-    }
-
-  }
-
-  return nil, err
-}
+//func FindControllerByName(ctx context.Context, controllerName string) (*ObjGateway, error) {
+//  folderName := fmt.Sprintf("controller/%s", strings.ToLower(controllerName))
+//
+//  fset := token.NewFileSet()
+//  pkgs, err := parser.ParseDir(fset, folderName, nil, parser.ParseComments)
+//  if err != nil {
+//    return nil, err
+//  }
+//
+//  for _, pkg := range pkgs {
+//
+//    // read file by file
+//    for _, file := range pkg.Files {
+//
+//      // in every declaration like type, func, const
+//      for _, decl := range file.Decls {
+//
+//        // focus only to type
+//        gen, ok := decl.(*ast.GenDecl)
+//        if !ok || gen.Tok != token.TYPE {
+//          continue
+//        }
+//
+//        for _, specs := range gen.Specs {
+//
+//          ts, ok := specs.(*ast.TypeSpec)
+//          if !ok {
+//            continue
+//          }
+//
+//          if _, ok := ts.Type.(*ast.StructType); ok {
+//
+//            // check the specific struct name
+//            if ts.Name.String() != gatewayStructName {
+//              continue
+//            }
+//
+//            return NewObjGateway(pkg.Name)
+//            //inportLine = fset.Position(iStruct.Fields.Closing).Line
+//            //return inportLine, nil
+//          }
+//        }
+//
+//      }
+//
+//    }
+//
+//  }
+//
+//  return nil, err
+//}

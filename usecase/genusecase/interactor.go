@@ -2,7 +2,6 @@ package genusecase
 
 import (
 	"context"
-	"fmt"
 	"github.com/mirzaakhena/gogen2/domain/entity"
 )
 
@@ -33,14 +32,9 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
 	// create folder usecase
 	rootFolderName := entity.GetUsecaseRootFolderName(*obj)
 	{
-		exist, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
+		_, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
 		if err != nil {
 			return nil, err
-		}
-
-		if exist {
-			res.Message = fmt.Sprintf("Usecase with package name %s already exist", obj.UsecaseName.LowerCase())
-			return res, nil
 		}
 	}
 
