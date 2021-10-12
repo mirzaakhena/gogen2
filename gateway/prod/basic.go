@@ -4,7 +4,6 @@ import (
   "bufio"
   "bytes"
   "context"
-  "github.com/mirzaakhena/gogen2/infrastructure/log"
   "golang.org/x/tools/imports"
   "io/ioutil"
   "os"
@@ -40,21 +39,21 @@ func (r *basicUtilityGateway) WriteFile(ctx context.Context, templateData, outpu
   // TODO move it outside
   fileOut, err := os.Create(outputFilePath)
   if err != nil {
-   return err
+    return err
   }
 
   tpl, err := template.
-   New("something").
-   Funcs(FuncMap).
-   Parse(templateData)
+    New("something").
+    Funcs(FuncMap).
+    Parse(templateData)
 
   if err != nil {
-   return err
+    return err
   }
 
   err = tpl.Execute(fileOut, obj)
   if err != nil {
-   return err
+    return err
   }
 
   return nil
@@ -110,8 +109,7 @@ func (r *basicUtilityGateway) GetPackagePath(ctx context.Context) string {
 
   file, err := os.Open("go.mod")
   if err != nil {
-    log.Error(ctx, "go.mod is not found. Please create it with command `go mod init your/path/project`\n")
-    os.Exit(1)
+    panic("go.mod is not found. Please create it with command `go mod init your/path/project`\n")
   }
   defer func() {
     err = file.Close()
@@ -132,8 +130,7 @@ func (r *basicUtilityGateway) GetPackagePath(ctx context.Context) string {
   }
 
   if err := scanner.Err(); err != nil {
-    log.Error(ctx, err.Error())
-    os.Exit(1)
+    panic(err.Error())
   }
 
   return strings.Trim(gomodPath, "\"")

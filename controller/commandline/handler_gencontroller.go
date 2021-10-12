@@ -3,7 +3,6 @@ package commandline
 import (
   "context"
   "fmt"
-  "github.com/mirzaakhena/gogen2/infrastructure/log"
   "github.com/mirzaakhena/gogen2/usecase/gencontroller"
 )
 
@@ -12,7 +11,7 @@ func (r *Controller) genControllerHandler(inputPort gencontroller.Inport) func(.
 
   return func(commands ...string) error {
 
-    ctx := log.Context(context.Background())
+    ctx := context.Background()
 
     if len(commands) < 2 {
       err := fmt.Errorf("invalid gogen controller command format. Try this `gogen controller ControllerName UsecaseName`")
