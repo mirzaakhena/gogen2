@@ -15,7 +15,6 @@ type Outport interface {
 	service.GetPackagePathService
 	service.CreateFolderIfNotExistService
 	service.PrintTemplateService
-	service.ApplicationActionInterface
 
 	GetRepositoryTemplate(ctx context.Context) string
 	GetRepositoryFunctionTemplate(ctx context.Context, repoName vo.Naming) (string, error)

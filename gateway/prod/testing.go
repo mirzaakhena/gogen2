@@ -7,5 +7,5 @@ import (
 
 // GetTestTemplate ...
 func (r *prodGateway) GetTestTemplate(ctx context.Context) string {
-	return templates.TestFile
+	return templates.ReadFile("usecase/usecase_test._go")
 }

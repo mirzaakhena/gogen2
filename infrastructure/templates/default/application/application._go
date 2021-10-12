@@ -1,6 +1,6 @@
 package application
 
-import "athens/controller"
+import "{{.PackagePath}}/controller"
 
 type RegistryContract interface {
 	controller.Controller

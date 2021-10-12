@@ -4,6 +4,7 @@ import (
   "context"
   "github.com/mirzaakhena/gogen2/domain/entity"
   "github.com/mirzaakhena/gogen2/domain/service"
+  "github.com/mirzaakhena/gogen2/infrastructure/templates"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -29,12 +30,12 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  objCtrl, err := entity.NewObjController(req.ControllerName)
+  objCtrl, err := entity.NewObjController(req.ControllerName, req.DriverName)
   if err != nil {
     return nil, err
   }
 
-  err = service.ConstructApplication(ctx, r.outport)
+  err = service.ConstructError(ctx, r.outport)
   if err != nil {
     return nil, err
   }
@@ -44,12 +45,42 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  _, err = r.outport.CreateFolderIfNotExist(ctx, entity.GetControllerRootFolderName(*objCtrl))
+  _, err = r.outport.CreateFolderIfNotExist(ctx, objCtrl.GetControllerRootFolderName())
   if err != nil {
     return nil, err
   }
 
+  {
+    tmp := r.outport.GetControllerTemplate(ctx)
+    _, err = r.outport.WriteFileIfNotExist(ctx, tmp, objCtrl.GetControllerInterfaceFile(), struct{}{})
+    if err != nil {
+      return nil, err
+    }
+  }
+
   packagePath := r.outport.GetPackagePath(ctx)
+
+  //err = service.ConstructApplication(ctx, packagePath, r.outport)
+  //if err != nil {
+  //  return nil, err
+  //}
+
+  {
+    _, err := r.outport.CreateFolderIfNotExist(ctx, "infrastructure/util")
+    if err != nil {
+      return nil, err
+    }
+
+    bytes, err := templates.AppTemplates.ReadFile("default/infrastructure/util/helper._go")
+    if err != nil {
+      return nil, err
+    }
+
+    _, err = r.outport.WriteFileIfNotExist(ctx, string(bytes), "infrastructure/util/helper.go", struct{}{})
+    if err != nil {
+      return nil, err
+    }
+  }
 
   framework := "gingonic"
 
@@ -57,7 +88,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   // response.go
   {
-    filename := entity.GetControllerResponseFileName(*objCtrl)
+    filename := objCtrl.GetControllerResponseFileName()
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetResponseTemplate(ctx)
 
@@ -75,7 +106,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   // interceptor.go
   {
-    filename := entity.GetControllerInterceptorFileName(*objCtrl)
+    filename := objCtrl.GetControllerInterceptorFileName()
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetInterceptorTemplate(ctx, framework)
 
@@ -93,7 +124,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   // handler_xxx.go
   {
-    filename := entity.GetControllerHandlerFileName(*objCtrl, *objUsecase)
+    filename := objCtrl.GetControllerHandlerFileName(*objUsecase)
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetHandlerTemplate(ctx, framework)
 
@@ -111,7 +142,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
 
   // router.go
   {
-    filename := entity.GetControllerRouterFileName(*objCtrl)
+    filename := objCtrl.GetControllerRouterFileName()
     if !r.outport.IsFileExist(ctx, filename) {
       templateFile := r.outport.GetRouterTemplate(ctx, framework)
 
@@ -142,7 +173,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     }
 
     // reformat outport.go
-    err = r.outport.Reformat(ctx, entity.GetControllerRouterFileName(*objCtrl), bytes)
+    err = r.outport.Reformat(ctx, objCtrl.GetControllerRouterFileName(), bytes)
     if err != nil {
       return nil, err
     }
@@ -163,7 +194,7 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     }
 
     // reformat outport.go
-    err = r.outport.Reformat(ctx, entity.GetControllerRouterFileName(*objCtrl), bytes)
+    err = r.outport.Reformat(ctx, objCtrl.GetControllerRouterFileName(), bytes)
     if err != nil {
       return nil, err
     }

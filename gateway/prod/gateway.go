@@ -7,10 +7,10 @@ import (
 
 // GetGatewayTemplate ...
 func (r *prodGateway) GetGatewayTemplate(ctx context.Context) string {
-  return templates.GatewayGormFile
+  return templates.ReadFile("gateway/gorm/impl._go")
 }
 
 // GetGatewayMethodTemplate ...
 func (r *prodGateway) GetGatewayMethodTemplate(ctx context.Context) string {
-  return templates.GatewayGormInjectMethodFile
+  return templates.ReadFile("gateway/gorm/inject._go")
 }

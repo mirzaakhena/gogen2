@@ -7,7 +7,7 @@ import (
 
 // Outport of GenController
 type Outport interface {
-  service.ApplicationActionInterface
+  service.ErrorActionInterface
   service.LogActionInterface
 
   service.IsFileExistService
@@ -16,6 +16,7 @@ type Outport interface {
   service.GetPackagePathService
   service.PrintTemplateService
 
+  GetControllerTemplate(ctx context.Context) string
   GetResponseTemplate(ctx context.Context) string
   GetInterceptorTemplate(ctx context.Context, framework string) string
   GetRouterTemplate(ctx context.Context, framework string) string

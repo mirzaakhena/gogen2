@@ -24,7 +24,9 @@ func (r *genErrorInteractor) Execute(ctx context.Context, req InportRequest) (*I
 
 	res := &InportResponse{}
 
-	err := service.ConstructApplication(ctx, r.outport)
+	packagePath := r.outport.GetPackagePath(ctx)
+
+	err := service.ConstructApplication(ctx, packagePath, r.outport)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +52,7 @@ func (r *genErrorInteractor) Execute(ctx context.Context, req InportRequest) (*I
 	}
 
 	// reformat outport.go
-	err = r.outport.Reformat(ctx, entity.GetErrorEnumFileName(), bytes)
+	err = r.outport.Reformat(ctx, objError.GetErrorEnumFileName(), bytes)
 	if err != nil {
 		return nil, err
 	}

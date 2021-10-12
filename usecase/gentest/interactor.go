@@ -44,14 +44,9 @@ func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*In
 		return nil, err
 	}
 
-	//err = obj.FillOutport(packagePath, outportMethods)
-	//if err != nil {
-	//	return nil, err
-	//}
-
 	// create interactor_test.go
 
-	outputFile := entity.GetTestFileName(*obj)
+	outputFile := obj.GetTestFileName()
 
 	if r.outport.IsFileExist(ctx, outputFile) {
 		res.Message = fmt.Sprintf("file test %s already exists", req.TestName)
@@ -65,8 +60,9 @@ func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*In
 		return nil, err
 	}
 
-	testTemplateFile := r.outport.GetTestTemplate(ctx)
-	err = r.outport.WriteFile(ctx, testTemplateFile, outputFile, obj.GetData(packagePath, outportMethods))
+	tmp := r.outport.GetTestTemplate(ctx)
+
+	err = r.outport.WriteFile(ctx, tmp, outputFile, obj.GetData(packagePath, outportMethods))
 	if err != nil {
 		return nil, err
 	}

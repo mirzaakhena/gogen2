@@ -13,6 +13,7 @@ type Inport interface {
 type InportRequest struct {
   ControllerName string
   UsecaseName    string
+  DriverName     string
 }
 
 // InportResponse is response payload after running the usecase GenController

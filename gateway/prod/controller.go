@@ -5,6 +5,10 @@ import (
   "github.com/mirzaakhena/gogen2/infrastructure/templates"
 )
 
+func (r *prodGateway) GetControllerTemplate(ctx context.Context) string {
+  return templates.ReadFile("controller/controller._go")
+}
+
 func (r *prodGateway) GetResponseTemplate(ctx context.Context) string {
   return templates.ControllerGinGonicResponseFile
 }

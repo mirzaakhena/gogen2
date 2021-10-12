@@ -7,7 +7,7 @@ import (
 
 // Outport of GenGateway
 type Outport interface {
-	service.ApplicationActionInterface
+	// service.ApplicationActionInterface
 	service.LogActionInterface
 	service.GetPackagePathService
 	service.IsFileExistService

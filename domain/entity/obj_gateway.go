@@ -48,13 +48,13 @@ func (o ObjGateway) GetData(PackagePath string, outportMethods vo.OutportMethods
 }
 
 // GetGatewayRootFolderName ...
-func GetGatewayRootFolderName(o ObjGateway) string {
+func (o ObjGateway) GetGatewayRootFolderName() string {
   return fmt.Sprintf("gateway/%s", o.GatewayName.LowerCase())
 }
 
 // GetGatewayFileName ...
-func GetGatewayFileName(o ObjGateway) string {
-  return fmt.Sprintf("%s/gateway.go", GetGatewayRootFolderName(o))
+func (o ObjGateway) GetGatewayFileName() string {
+  return fmt.Sprintf("%s/gateway.go", o.GetGatewayRootFolderName())
 }
 
 // GetGatewayStructName ...
@@ -63,7 +63,7 @@ func GetGatewayStructName() string {
 }
 
 func (o ObjGateway) InjectToGateway(injectedCode string) ([]byte, error) {
-  return InjectCodeAtTheEndOfFile(GetGatewayFileName(o), injectedCode)
+  return InjectCodeAtTheEndOfFile(o.GetGatewayFileName(), injectedCode)
 }
 
 func FindGatewayByName(gatewayName string) (*ObjGateway, error) {

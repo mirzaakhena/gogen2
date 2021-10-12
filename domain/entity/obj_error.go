@@ -39,21 +39,21 @@ func (o ObjError) GetData() *ObjDataError {
 }
 
 // GetErrorRootFolderName ...
-func GetErrorRootFolderName() string {
+func (o ObjError) GetErrorRootFolderName() string {
 	return fmt.Sprintf("application/apperror")
 }
 
 // GetErrorEnumFileName ...
-func GetErrorEnumFileName() string {
-	return fmt.Sprintf("%s/error_enum.go", GetErrorRootFolderName())
+func (o ObjError) GetErrorEnumFileName() string {
+	return fmt.Sprintf("%s/error_enum.go", o.GetErrorRootFolderName())
 }
 
 // GetErrorFuncFileName ...
-func GetErrorFuncFileName() string {
-	return fmt.Sprintf("%s/error_func.go", GetErrorRootFolderName())
+func (o ObjError) GetErrorFuncFileName() string {
+	return fmt.Sprintf("%s/error_func.go", o.GetErrorRootFolderName())
 }
 
 // InjectCode ...
 func (o ObjError) InjectCode(templateCode string) ([]byte, error) {
-	return InjectCodeAtTheEndOfFile(GetErrorEnumFileName(), templateCode)
+	return InjectCodeAtTheEndOfFile(o.GetErrorEnumFileName(), templateCode)
 }

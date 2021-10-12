@@ -26,7 +26,7 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 
 	res := &InportResponse{}
 
-	objGateway, err := entity.NewObjGateway(req.GatewayName)
+	obj, err := entity.NewObjGateway(req.GatewayName)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 		return nil, err
 	}
 
-	_, err = r.outport.CreateFolderIfNotExist(ctx, entity.GetGatewayRootFolderName(*objGateway))
+	_, err = r.outport.CreateFolderIfNotExist(ctx, obj.GetGatewayRootFolderName())
 	if err != nil {
 		return nil, err
 	}
@@ -48,14 +48,14 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 		return nil, err
 	}
 
-	gatewayFile := entity.GetGatewayFileName(*objGateway)
+	gatewayFile := obj.GetGatewayFileName()
 
 	// file gateway impl is not exist, we create one
 	if !r.outport.IsFileExist(ctx, gatewayFile) {
 
 		gatewayTemplate := r.outport.GetGatewayTemplate(ctx)
 
-		data := objGateway.GetData(packagePath, outportMethods)
+		data := obj.GetData(packagePath, outportMethods)
 		err := r.outport.WriteFile(ctx, gatewayTemplate, gatewayFile, data)
 		if err != nil {
 			return nil, err
@@ -70,7 +70,7 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 	}
 
 	// file gateway impl file is already exist, we want to inject non existing method
-	existingFunc, err := vo.NewGatewayMethod(objGateway.GatewayName.CamelCase(), entity.GetGatewayRootFolderName(*objGateway), packagePath)
+	existingFunc, err := vo.NewGatewayMethod(obj.GatewayName.CamelCase(), obj.GetGatewayRootFolderName(), packagePath)
 	if err != nil {
 		return nil, err
 	}
@@ -86,20 +86,20 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 	gatewayCode := r.outport.GetGatewayMethodTemplate(ctx)
 
 	// we will only inject the non existing method
-	data := objGateway.GetData(packagePath, notExistingMethod)
+	data := obj.GetData(packagePath, notExistingMethod)
 
 	templateHasBeenInjected, err := r.outport.PrintTemplate(ctx, gatewayCode, data)
 	if err != nil {
 		return nil, err
 	}
 
-	bytes, err := objGateway.InjectToGateway(templateHasBeenInjected)
+	bytes, err := obj.InjectToGateway(templateHasBeenInjected)
 	if err != nil {
 		return nil, err
 	}
 
 	// reformat outport.go
-	err = r.outport.Reformat(ctx, entity.GetGatewayFileName(*objGateway), bytes)
+	err = r.outport.Reformat(ctx, obj.GetGatewayFileName(), bytes)
 	if err != nil {
 		return nil, err
 	}

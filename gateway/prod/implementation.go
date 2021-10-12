@@ -8,6 +8,7 @@ import (
 
 type prodGateway struct {
   *basicUtilityGateway
+  *errorGateway
 }
 
 func (r *prodGateway) GetRegistryTemplate(ctx context.Context) string {
@@ -34,5 +35,6 @@ func (r *prodGateway) FindAllObjUsecases(ctx context.Context, objController *ent
 func NewProdGateway() *prodGateway {
   return &prodGateway{
     basicUtilityGateway: &basicUtilityGateway{},
+    errorGateway:        &errorGateway{},
   }
 }

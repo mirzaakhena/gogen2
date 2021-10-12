@@ -8,54 +8,51 @@ import (
 
 // GetRepositoryTemplate ...
 func (r *prodGateway) GetRepositoryTemplate(ctx context.Context) string {
-	return templates.RepositoryFile
+	return templates.ReadFile("domain/repository/repository._go")
 }
 
 // GetRepositoryFunctionTemplate ...
 func (r *prodGateway) GetRepositoryFunctionTemplate(ctx context.Context, repoName vo.Naming) (string, error) {
 
 	if repoName.HasOneOfThisPrefix("save", "create", "add", "update") {
-		return templates.RepositoryInterfaceSaveFile, nil
+		return templates.ReadFile("domain/repository/repository_interface_save._go"), nil
 	}
 
 	if repoName.HasOneOfThisPrefix("findone", "findfirst", "findlast", "getone") {
-		return templates.RepositoryInterfaceFindOneFile, nil
+		return templates.ReadFile("domain/repository/repository_interface_findone._go"), nil
 	}
 
 	if repoName.HasOneOfThisPrefix("find", "get") {
-		return templates.RepositoryInterfaceFindFile, nil
+		return templates.ReadFile("domain/repository/repository_interface_find._go"), nil
 	}
 
 	if repoName.HasOneOfThisPrefix("remove", "delete") {
-		return templates.RepositoryInterfaceRemoveFile, nil
+		return templates.ReadFile("domain/repository/repository_interface_remove._go"), nil
 	}
 
-	return templates.RepositoryInterfaceFile, nil
+	return templates.ReadFile("domain/repository/repository_interface._go"), nil
 }
 
 // GetInteractorRepoCallTemplate ...
 func (r *prodGateway) GetInteractorRepoCallTemplate(ctx context.Context, repoName vo.Naming) (string, error) {
 
 	if repoName.HasOneOfThisPrefix("findone", "findfirst", "findlast", "getone") { //
-		return templates.RepoInjectInteractorFindOneFile, nil
-
+		return templates.ReadFile("domain/repository/repository_inject_findone._go"), nil
 	}
 
 	if repoName.HasOneOfThisPrefix("find", "get") {
-		return templates.RepoInjectInteractorFindFile, nil
-
+		return templates.ReadFile("domain/repository/repository_inject_find._go"), nil
 	}
 
 	if repoName.HasOneOfThisPrefix("remove", "delete") {
-		return templates.RepoInjectInteractorRemoveFile, nil
-
+		return templates.ReadFile("domain/repository/repository_inject_remove._go"), nil
 	}
 
 	if repoName.HasOneOfThisPrefix("save", "create", "add", "update") {
-		return templates.RepoInjectInteractorSaveFile, nil
+		return templates.ReadFile("domain/repository/repository_inject_save._go"), nil
 
 	}
 
-	return templates.RepoInjectInteractorFile, nil
+	return templates.ReadFile("domain/repository/repository_inject._go"), nil
 
 }

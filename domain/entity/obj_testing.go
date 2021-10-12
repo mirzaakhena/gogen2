@@ -40,6 +40,6 @@ func (o ObjTesting) GetData(PackagePath string, outportMethods vo.OutportMethods
 }
 
 // GetTestFileName ...
-func GetTestFileName(o ObjTesting) string {
-	return fmt.Sprintf("%s/testcase_%s_test.go", GetUsecaseRootFolderName(o.ObjUsecase), o.TestName.LowerCase())
+func (o ObjTesting) GetTestFileName() string {
+	return fmt.Sprintf("%s/testcase_%s_test.go", o.ObjUsecase.GetUsecaseRootFolderName(), o.TestName.LowerCase())
 }

@@ -31,7 +31,7 @@ func (r *genEntityInteractor) Execute(ctx context.Context, req InportRequest) (*
 	}
 
 	// create folder entity
-	rootFolderName := entity.GetEntityRootFolderName()
+	rootFolderName := obj.GetEntityRootFolderName()
 	{
 		_, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
 		if err != nil {
@@ -53,7 +53,7 @@ func (r *genEntityInteractor) Execute(ctx context.Context, req InportRequest) (*
 	// create file entity.go
 	{
 		inportTemplateFile := r.outport.GetEntityTemplate(ctx)
-		outputFile := entity.GetEntityFileName(*obj)
+		outputFile := obj.GetEntityFileName()
 		_, err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, obj.GetData())
 		if err != nil {
 			return nil, err
