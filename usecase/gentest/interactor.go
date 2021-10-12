@@ -65,5 +65,38 @@ func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*In
 
   fmt.Printf("%v\n", existingFunc)
 
+  //------
+
+  // collect the only methods that has not added yet
+  notExistingMethod := vo.OutportMethods{}
+  for _, m := range outportMethods {
+    if _, exist := existingFunc[m.MethodName]; !exist {
+      notExistingMethod = append(notExistingMethod, m)
+    }
+  }
+
+  gatewayCode := r.outport.GetTestMethodTemplate(ctx)
+
+  // we will only inject the non existing method
+  data := obj.GetData(packagePath, notExistingMethod)
+
+  templateHasBeenInjected, err := r.outport.PrintTemplate(ctx, gatewayCode, data)
+  if err != nil {
+    return nil, err
+  }
+
+  bytes, err := obj.InjectToTest(templateHasBeenInjected)
+  if err != nil {
+    return nil, err
+  }
+
+  // reformat outport.go
+  err = r.outport.Reformat(ctx, obj.GetTestFileName(), bytes)
+  if err != nil {
+    return nil, err
+  }
+
+  //------
+
   return res, nil
 }

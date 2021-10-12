@@ -12,14 +12,6 @@ type mockOutport{{PascalCase .TestName}} struct {
     t *testing.T
 }
 
-{{range .Methods}}
-func (r *mockOutport{{PascalCase $.TestName}}) {{.MethodName}}{{.MethodSignature}} {
-    log.Info(ctx, "called")
-
-    return {{.DefaultReturnVal}}
-}
-{{end}}
-
 // TestCase{{PascalCase .TestName}} is for the case where ...
 // explain the purpose of this test here with human readable naration...
 func TestCase{{PascalCase .TestName}}(t *testing.T) {
@@ -41,3 +33,11 @@ func TestCase{{PascalCase .TestName}}(t *testing.T) {
 	t.Logf("%v", res)
 
 }
+
+{{range .Methods}}
+func (r *mockOutport{{PascalCase $.TestName}}) {{.MethodName}}{{.MethodSignature}} {
+    log.Info(ctx, "called")
+
+    return {{.DefaultReturnVal}}
+}
+{{end}}

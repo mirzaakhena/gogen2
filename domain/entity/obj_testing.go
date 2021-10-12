@@ -43,3 +43,7 @@ func (o ObjTesting) GetData(PackagePath string, outportMethods vo.OutportMethods
 func (o ObjTesting) GetTestFileName() string {
 	return fmt.Sprintf("%s/testcase_%s_test.go", o.ObjUsecase.GetUsecaseRootFolderName(), o.TestName.LowerCase())
 }
+
+func (o ObjTesting) InjectToTest(injectedCode string) ([]byte, error) {
+	return InjectCodeAtTheEndOfFile(o.GetTestFileName(), injectedCode)
+}

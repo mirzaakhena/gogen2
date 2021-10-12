@@ -12,6 +12,8 @@ type Outport interface {
 	service.WriteFileService
 	service.ReformatService
 	service.GetPackagePathService
+	service.PrintTemplateService
 
 	GetTestTemplate(ctx context.Context) string
+	GetTestMethodTemplate(ctx context.Context) string
 }
