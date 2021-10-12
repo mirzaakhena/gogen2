@@ -1,5 +1,12 @@
 package {{LowerCase .GatewayName}}
 
+import (
+	"context"
+
+	"{{.PackagePath}}/domain/entity"
+	"{{.PackagePath}}/infrastructure/log"
+)
+
 type gateway struct {
 }
 

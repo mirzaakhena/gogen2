@@ -13,13 +13,13 @@ type gatewayMethod struct {
 
 var existingFunc map[string]int
 
-func NewGatewayMethod(structName, gatewayRootFolderName string, packagePath string) (map[string]int, error) {
+func NewOutportMethodImpl(structName, gatewayRootFolderName string, packagePath string) (map[string]int, error) {
 
   existingFunc = map[string]int{}
 
   gm := gatewayMethod{packagePath: packagePath}
 
-  err := gm.readStruct("gateway", gatewayRootFolderName)
+  err := gm.readStruct(structName, gatewayRootFolderName)
   if err != nil {
     return nil, err
   }

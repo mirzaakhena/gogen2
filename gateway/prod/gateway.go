@@ -12,5 +12,5 @@ func (r *prodGateway) GetGatewayTemplate(ctx context.Context) string {
 
 // GetGatewayMethodTemplate ...
 func (r *prodGateway) GetGatewayMethodTemplate(ctx context.Context) string {
-  return templates.ReadFile("gateway/gorm/inject._go")
+  return templates.ReadFile("gateway/${gatewayname}/~inject._go")
 }

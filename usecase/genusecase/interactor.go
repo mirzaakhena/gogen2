@@ -3,6 +3,7 @@ package genusecase
 import (
   "context"
   "github.com/mirzaakhena/gogen2/domain/entity"
+  "github.com/mirzaakhena/gogen2/domain/service"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -29,52 +30,61 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
     return nil, err
   }
 
-  // create folder usecase
-  {
-    folderPath := obj.GetUsecaseRootFolderName()
-    _, err := r.outport.CreateFolderIfNotExist(ctx, folderPath)
-    if err != nil {
-      return nil, err
-    }
-  }
+  //// create folder usecase
+  //{
+  //  folderPath := obj.GetUsecaseRootFolderName()
+  //  _, err := r.outport.CreateFolderIfNotExist(ctx, folderPath)
+  //  if err != nil {
+  //    return nil, err
+  //  }
+  //}
 
   packagePath := r.outport.GetPackagePath(ctx)
 
-  // create file inport.go
-  {
-    tmp := r.outport.GetInportTemplate(ctx)
-		outputFile := obj.GetInportFileName()
-    _, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
-    if err != nil {
-      return nil, err
-    }
+  fileRenamer := map[string]string{
+    "usecasename":  obj.UsecaseName.LowerCase(),
   }
 
-  // create file outport.go
-  {
-		tmp := r.outport.GetOutportTemplate(ctx)
-		outputFile := obj.GetOutportFileName()
-		_, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
-		if err != nil {
-			return nil, err
-		}
+  err = service.CreateEverythingExactly("default/","usecase", fileRenamer, obj.GetData(packagePath))
+  if err != nil {
+    return nil, err
   }
 
-  // create file interactor.go
-  {
-		tmp := r.outport.GetInteractorTemplate(ctx)
-		outputFile := obj.GetInteractorFileName()
-		_, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
-		if err != nil {
-			return nil, err
-		}
-
-    // reformat interactor.go since we have some import on it
-    err = r.outport.Reformat(ctx, outputFile, nil)
-    if err != nil {
-      return nil, err
-    }
-  }
+  //// create file inport.go
+  //{
+  //  tmp := r.outport.GetInportTemplate(ctx)
+  //	outputFile := obj.GetInportFileName()
+  //  _, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
+  //  if err != nil {
+  //    return nil, err
+  //  }
+  //}
+  //
+  //// create file outport.go
+  //{
+  //	tmp := r.outport.GetOutportTemplate(ctx)
+  //	outputFile := obj.GetOutportFileName()
+  //	_, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
+  //	if err != nil {
+  //		return nil, err
+  //	}
+  //}
+  //
+  //// create file interactor.go
+  //{
+  //	tmp := r.outport.GetInteractorTemplate(ctx)
+  //	outputFile := obj.GetInteractorFileName()
+  //	_, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
+  //	if err != nil {
+  //		return nil, err
+  //	}
+  //
+  //  // reformat interactor.go since we have some import on it
+  //  err = r.outport.Reformat(ctx, outputFile, nil)
+  //  if err != nil {
+  //    return nil, err
+  //  }
+  //}
 
   return res, nil
 }

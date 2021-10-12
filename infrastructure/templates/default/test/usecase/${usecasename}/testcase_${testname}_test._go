@@ -3,6 +3,9 @@ package {{LowerCase .UsecaseName}}
 import (
 	"context"
 	"testing"
+
+	"{{.PackagePath}}/domain/entity"
+	"{{.PackagePath}}/infrastructure/log"
 )
 
 type mockOutport{{PascalCase .TestName}} struct {
@@ -16,7 +19,6 @@ func (r *mockOutport{{PascalCase $.TestName}}) {{.MethodName}}{{.MethodSignature
     return {{.DefaultReturnVal}}
 }
 {{end}}
-
 
 // TestCase{{PascalCase .TestName}} is for the case where ...
 // explain the purpose of this test here with human readable naration...

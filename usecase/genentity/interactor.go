@@ -2,8 +2,8 @@ package genentity
 
 import (
 	"context"
-	"fmt"
 	"github.com/mirzaakhena/gogen2/domain/entity"
+	"github.com/mirzaakhena/gogen2/domain/service"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -30,42 +30,49 @@ func (r *genEntityInteractor) Execute(ctx context.Context, req InportRequest) (*
 		return nil, err
 	}
 
-	// create folder entity
-	rootFolderName := obj.GetEntityRootFolderName()
-	{
-		_, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	exist, err := obj.IsEntityExist()
+	err = service.CreateEverythingExactly("default/","domain/entity", map[string]string{
+		"entityname": obj.EntityName.SnakeCase(),
+	}, obj.GetData())
 	if err != nil {
 		return nil, err
 	}
 
-	// entity already exist, nothing to do
-	if exist {
-		res.Message = fmt.Sprintf("Entity with name %s already exist", req.EntityName)
-		return res, nil
-	}
-
-	// create file entity.go
-	{
-		inportTemplateFile := r.outport.GetEntityTemplate(ctx)
-		outputFile := obj.GetEntityFileName()
-		_, err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, obj.GetData())
-		if err != nil {
-			return nil, err
-		}
-
-		// reformat interactor.go
-		err = r.outport.Reformat(ctx, outputFile, nil)
-		if err != nil {
-			return nil, err
-		}
-
-	}
+	//// create folder entity
+	//rootFolderName := obj.GetEntityRootFolderName()
+	//{
+	//	_, err := r.outport.CreateFolderIfNotExist(ctx, rootFolderName)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//}
+	//
+	//exist, err := obj.IsEntityExist()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//// entity already exist, nothing to do
+	//if exist {
+	//	res.Message = fmt.Sprintf("Entity with name %s already exist", req.EntityName)
+	//	return res, nil
+	//}
+	//
+	//// create file entity.go
+	//{
+	//	inportTemplateFile := r.outport.GetEntityTemplate(ctx)
+	//	outputFile := obj.GetEntityFileName()
+	//	_, err := r.outport.WriteFileIfNotExist(ctx, inportTemplateFile, outputFile, obj.GetData())
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//
+	//	// reformat interactor.go
+	//	err = r.outport.Reformat(ctx, outputFile, nil)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//
+	//}
 
 	return res, nil
 }

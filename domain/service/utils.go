@@ -9,9 +9,13 @@ import (
   "text/template"
 )
 
-func CreateEverythingExactly(path string, fileRenamer map[string]string) error {
+func CreateEverythingExactly(skip, path string, fileRenamer map[string]string, data interface{}) error {
 
-  ff := FileAndFolders{
+  path = fmt.Sprintf("%s%s", skip, path)
+
+  lenSkip := len(skip)
+
+  ff := fileAndFolders{
     Folders: map[string]int{},
     Files:   make([]string, 0),
   }
@@ -21,11 +25,20 @@ func CreateEverythingExactly(path string, fileRenamer map[string]string) error {
     return err
   }
 
+  i := strings.Index(path, skip)
+
+  err = os.MkdirAll(path[i+lenSkip:], 0755)
+  if err != nil {
+    return err
+  }
+
   for folder := range ff.Folders {
 
     s := replaceVariable(folder, fileRenamer)
 
-    err := os.MkdirAll(s, 0755)
+    k := strings.Index(s, skip)
+
+    err := os.MkdirAll(s[k+lenSkip:], 0755)
     if err != nil {
       return err
     }
@@ -38,10 +51,21 @@ func CreateEverythingExactly(path string, fileRenamer map[string]string) error {
     i := strings.LastIndex(file, "/")
     nameFileWithExtOnly := fmt.Sprintf("%s", file[i+1:])
 
+    if strings.HasPrefix(nameFileWithExtOnly, "~") {
+      continue
+    }
+
     j := strings.LastIndex(nameFileWithExtOnly, "._")
     nameFileWithoutUnderscore := fmt.Sprintf("%s/%s%s", file[:i], nameFileWithExtOnly[:j+1], nameFileWithExtOnly[j+2:])
 
-    fileOut, err := os.Create(nameFileWithoutUnderscore)
+    // skip the first path
+    k := strings.Index(nameFileWithoutUnderscore, skip)
+
+    if IsFileExist(nameFileWithoutUnderscore[k+lenSkip:]) {
+      continue
+    }
+
+    fileOut, err := os.Create(nameFileWithoutUnderscore[k+lenSkip:])
     if err != nil {
       return err
     }
@@ -60,7 +84,7 @@ func CreateEverythingExactly(path string, fileRenamer map[string]string) error {
       return err
     }
 
-    err = tpl.Execute(fileOut, struct{}{})
+    err = tpl.Execute(fileOut, data)
     if err != nil {
       return err
     }
@@ -80,12 +104,12 @@ func replaceVariable(folder string, fileRenamer map[string]string) string {
   return s
 }
 
-type FileAndFolders struct {
+type fileAndFolders struct {
   Folders map[string]int
   Files   []string
 }
 
-func readFolders(path string, ff *FileAndFolders) error {
+func readFolders(path string, ff *fileAndFolders) error {
 
   dirs, err := templates.AppTemplates.ReadDir(path)
   if err != nil {
@@ -99,12 +123,12 @@ func readFolders(path string, ff *FileAndFolders) error {
     if dir.IsDir() {
 
       s := fmt.Sprintf("%s/%s", path, name)
-      //fmt.Printf("ketemu folder %s\n", s)
+      fmt.Printf("ketemu folder %s\n", s)
 
       for k := range ff.Folders {
         //fmt.Printf("k=%v\n", k)
         if strings.Contains(s, k) {
-          //fmt.Printf("remove %v from %v\n", k, ff.Folders)
+          fmt.Printf("remove %v from %v\n", k, ff.Folders)
           delete(ff.Folders, k)
         }
       }
@@ -118,6 +142,7 @@ func readFolders(path string, ff *FileAndFolders) error {
 
     } else {
       s := fmt.Sprintf("%s/%s", path, name)
+      fmt.Printf("ketemu file   %s\n", s)
       ff.Files = append(ff.Files, s)
     }
 
@@ -125,4 +150,11 @@ func readFolders(path string, ff *FileAndFolders) error {
 
   return nil
 
+}
+
+func IsFileExist(filepath string) bool {
+  if _, err := os.Stat(filepath); os.IsNotExist(err) {
+    return false
+  }
+  return true
 }

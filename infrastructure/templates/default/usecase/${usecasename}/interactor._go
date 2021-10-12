@@ -1,5 +1,9 @@
 package {{LowerCase .UsecaseName}}
 
+import (
+    "context"
+)
+
 //go:generate mockery --name Outport -output mocks/
 
 type {{CamelCase .UsecaseName}}Interactor struct {

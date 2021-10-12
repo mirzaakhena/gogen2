@@ -80,14 +80,10 @@ func (r *basicUtilityGateway) PrintTemplate(ctx context.Context, templateString 
 
 // IsFileExist ...
 func (r *basicUtilityGateway) IsFileExist(ctx context.Context, filepath string) bool {
-  _, err := os.Stat(filepath)
-  if err == nil {
-    return true
-  }
-  if os.IsNotExist(err) {
+  if _, err := os.Stat(filepath); os.IsNotExist(err) {
     return false
   }
-  return false
+  return true
 }
 
 // Reformat ...

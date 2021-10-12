@@ -1,77 +1,69 @@
 package gentest
 
 import (
-	"context"
-	"fmt"
-	"github.com/mirzaakhena/gogen2/domain/entity"
-	"github.com/mirzaakhena/gogen2/domain/service"
-	"github.com/mirzaakhena/gogen2/domain/vo"
+  "context"
+  "fmt"
+  "github.com/mirzaakhena/gogen2/domain/entity"
+  "github.com/mirzaakhena/gogen2/domain/service"
+  "github.com/mirzaakhena/gogen2/domain/vo"
 )
 
 //go:generate mockery --name Outport -output mocks/
 
 type genTestInteractor struct {
-	outport Outport
+  outport Outport
 }
 
 // NewUsecase is constructor for create default implementation of usecase GenTest
 func NewUsecase(outputPort Outport) Inport {
-	return &genTestInteractor{
-		outport: outputPort,
-	}
+  return &genTestInteractor{
+    outport: outputPort,
+  }
 }
 
 // Execute the usecase GenTest
 func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*InportResponse, error) {
 
-	res := &InportResponse{}
+  res := &InportResponse{}
 
-	// create log
-	{
-		err := service.ConstructLog(ctx, r.outport)
-		if err != nil {
-			return nil, err
-		}
-	}
+  err := service.CreateEverythingExactly("default/", "infrastructure/log", map[string]string{}, struct{}{})
+  if err != nil {
+    return nil, err
+  }
 
-	objUsecase, err := entity.NewObjUsecase(req.UsecaseName)
-	if err != nil {
-		return nil, err
-	}
+  objUsecase, err := entity.NewObjUsecase(req.UsecaseName)
+  if err != nil {
+    return nil, err
+  }
 
-	obj, err := entity.NewObjTesting(req.TestName, *objUsecase)
-	if err != nil {
-		return nil, err
-	}
+  obj, err := entity.NewObjTesting(req.TestName, *objUsecase)
+  if err != nil {
+    return nil, err
+  }
 
-	// create interactor_test.go
+  packagePath := r.outport.GetPackagePath(ctx)
 
-	outputFile := obj.GetTestFileName()
+  outportMethods, err := vo.NewOutportMethods(req.UsecaseName, packagePath)
+  if err != nil {
+    return nil, err
+  }
 
-	if r.outport.IsFileExist(ctx, outputFile) {
-		res.Message = fmt.Sprintf("file test %s already exists", req.TestName)
-		return res, nil
-	}
+  fileRenamer := map[string]string{
+    "usecasename": objUsecase.UsecaseName.LowerCase(),
+    "testname":    obj.TestName.LowerCase(),
+  }
+  err = service.CreateEverythingExactly("default/test/", "usecase", fileRenamer, obj.GetData(packagePath, outportMethods))
+  if err != nil {
+    return nil, err
+  }
 
-	packagePath := r.outport.GetPackagePath(ctx)
+  // file gateway impl file is already exist, we want to inject non existing method
+  existingFunc, err := vo.NewOutportMethodImpl(fmt.Sprintf("mockOutport%s", obj.TestName.PascalCase()), fmt.Sprintf("usecase/%s", obj.ObjUsecase.UsecaseName.LowerCase()), packagePath)
+  if err != nil {
+    return nil, err
+  }
 
-	outportMethods, err := vo.NewOutportMethods(req.UsecaseName, packagePath)
-	if err != nil {
-		return nil, err
-	}
+  fmt.Printf("%v\n", existingFunc)
 
-	tmp := r.outport.GetTestTemplate(ctx)
-
-	err = r.outport.WriteFile(ctx, tmp, outputFile, obj.GetData(packagePath, outportMethods))
-	if err != nil {
-		return nil, err
-	}
-
-	// reformat interactor.go
-	err = r.outport.Reformat(ctx, outputFile, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
+  return res, nil
 }

@@ -2,9 +2,9 @@ package gengateway
 
 import (
 	"context"
+	"github.com/mirzaakhena/gogen2/domain/service"
 
 	"github.com/mirzaakhena/gogen2/domain/entity"
-	"github.com/mirzaakhena/gogen2/domain/service"
 	"github.com/mirzaakhena/gogen2/domain/vo"
 )
 
@@ -26,17 +26,12 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 
 	res := &InportResponse{}
 
+	err := service.CreateEverythingExactly("default/", "infrastructure/log", map[string]string{}, struct{}{})
+	if err != nil {
+		return nil, err
+	}
+
 	obj, err := entity.NewObjGateway(req.GatewayName)
-	if err != nil {
-		return nil, err
-	}
-
-	err = service.ConstructLog(ctx, r.outport)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = r.outport.CreateFolderIfNotExist(ctx, obj.GetGatewayRootFolderName())
 	if err != nil {
 		return nil, err
 	}
@@ -48,29 +43,15 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 		return nil, err
 	}
 
-	gatewayFile := obj.GetGatewayFileName()
-
-	// file gateway impl is not exist, we create one
-	if !r.outport.IsFileExist(ctx, gatewayFile) {
-
-		gatewayTemplate := r.outport.GetGatewayTemplate(ctx)
-
-		data := obj.GetData(packagePath, outportMethods)
-		err := r.outport.WriteFile(ctx, gatewayTemplate, gatewayFile, data)
-		if err != nil {
-			return nil, err
-		}
-
-		err = r.outport.Reformat(ctx, gatewayFile, nil)
-		if err != nil {
-			return nil, err
-		}
-
-		return res, nil
+	err = service.CreateEverythingExactly("default/", "gateway", map[string]string{
+		"gatewayname": obj.GatewayName.LowerCase(),
+	}, obj.GetData(packagePath, outportMethods))
+	if err != nil {
+		return nil, err
 	}
 
 	// file gateway impl file is already exist, we want to inject non existing method
-	existingFunc, err := vo.NewGatewayMethod(obj.GatewayName.CamelCase(), obj.GetGatewayRootFolderName(), packagePath)
+	existingFunc, err := vo.NewOutportMethodImpl("gateway", obj.GetGatewayRootFolderName(), packagePath)
 	if err != nil {
 		return nil, err
 	}
