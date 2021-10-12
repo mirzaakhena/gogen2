@@ -43,24 +43,7 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  //// create folder repository
-  //{
-  //  _, err := r.outport.CreateFolderIfNotExist(ctx, "domain/repository")
-  //  if err != nil {
-  //    return nil, err
-  //  }
-  //}
-  //
   existingFile := "domain/repository/repository.go"
-  //
-  //// create repository.go file if not exist yet
-  //if !r.outport.IsFileExist(ctx, existingFile) {
-  //  tmp := r.outport.GetRepositoryTemplate(ctx)
-  //  err := r.outport.WriteFile(ctx, tmp, existingFile, struct{}{})
-  //  if err != nil {
-  //    return nil, err
-  //  }
-  //}
 
   // repository.go file is already exist, but is the innterface is exist ?
   exist, err := obj.IsRepoExist()

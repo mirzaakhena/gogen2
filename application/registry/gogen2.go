@@ -1,15 +1,15 @@
 package registry
 
 import (
-  "context"
   "flag"
+  "fmt"
   "github.com/mirzaakhena/gogen2/application"
   "github.com/mirzaakhena/gogen2/controller"
   "github.com/mirzaakhena/gogen2/controller/commandline"
   "github.com/mirzaakhena/gogen2/gateway/prod"
-  "github.com/mirzaakhena/gogen2/infrastructure/log"
   "github.com/mirzaakhena/gogen2/usecase/gencontroller"
   "github.com/mirzaakhena/gogen2/usecase/genentity"
+  "github.com/mirzaakhena/gogen2/usecase/generror"
   "github.com/mirzaakhena/gogen2/usecase/gengateway"
   "github.com/mirzaakhena/gogen2/usecase/genrepository"
   "github.com/mirzaakhena/gogen2/usecase/gentest"
@@ -38,7 +38,7 @@ func NewGogen2() func() application.RegistryContract {
         GenEntityInport:     genentity.NewUsecase(datasource),
         GenRepositoryInport: genrepository.NewUsecase(datasource),
         GenGatewayInport:    gengateway.NewUsecase(datasource),
-        //GenErrorInport:      generror.NewUsecase(datasource),
+        GenErrorInport:      generror.NewUsecase(datasource),
         GenControllerInport: gencontroller.NewUsecase(datasource),
         //GenRegistryInport:   genregistry.NewUsecase(datasource),
       },
@@ -53,7 +53,7 @@ func (r *gogen2) RunApplication() {
   cmd := flag.Arg(0)
 
   if cmd == "" {
-    log.Error(context.Background(), "try gogen2 usecase")
+    fmt.Printf("try gogen2 usecase\n")
     return
   }
 
@@ -64,12 +64,12 @@ func (r *gogen2) RunApplication() {
 
   f, exists := r.CommandMap[cmd]
   if !exists {
-    log.Error(context.Background(), "Command %s is not recognized", cmd)
+    fmt.Printf( "Command %s is not recognized\n", cmd)
     return
   }
   err := f(values...)
   if err != nil {
-    log.Error(context.Background(), err.Error())
+    fmt.Printf("%s\n", err.Error())
     return
   }
 }

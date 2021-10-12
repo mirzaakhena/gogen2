@@ -24,9 +24,9 @@ func (r *genErrorInteractor) Execute(ctx context.Context, req InportRequest) (*I
 
 	res := &InportResponse{}
 
-	packagePath := r.outport.GetPackagePath(ctx)
+	//packagePath := r.outport.GetPackagePath(ctx)
 
-	err := service.ConstructApplication(ctx, packagePath, r.outport)
+	err := service.CreateEverythingExactly("default/", "application/apperror", map[string]string{}, struct{}{})
 	if err != nil {
 		return nil, err
 	}

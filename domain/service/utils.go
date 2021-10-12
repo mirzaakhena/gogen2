@@ -80,6 +80,8 @@ func CreateEverythingExactly(skip, path string, fileRenamer map[string]string, d
       Funcs(prod.FuncMap).
       Parse(string(templateData))
 
+    template.New("").Lookup("")
+
     if err != nil {
       return err
     }

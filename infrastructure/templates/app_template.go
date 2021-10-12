@@ -113,7 +113,7 @@ var (
 	ApplicationErrorFuncFile string
 
 	// ApplicationErrorTemplateFile ...
-  //go:embed default/application/apperror/error_template._go
+	//go:embed default/application/apperror/~inject._go
 	ApplicationErrorTemplateFile string
 
 	// ApplicationConstantTemplateFile ...
@@ -146,22 +146,22 @@ var(
 
 var (
 
-  //go:embed default/controller/gingonic/handler-func._go
+	//go:embed default/_controller/gingonic/handler-func._go
 	ControllerGinGonicHandlerFuncFile string
 
-  //go:embed default/controller/gingonic/interceptor._go
+	//go:embed default/_controller/gingonic/interceptor._go
 	ControllerGinGonicInterceptorFile string
 
-  //go:embed default/controller/gingonic/response._go
+	//go:embed default/_controller/gingonic/response._go
 	ControllerGinGonicResponseFile string
 
-  //go:embed default/controller/gingonic/router-inport._go
+	//go:embed default/_controller/gingonic/router-inport._go
 	ControllerGinGonicRouterInportFile string
 
-  //go:embed default/controller/gingonic/router-struct._go
+	//go:embed default/_controller/gingonic/router-struct._go
 	ControllerGinGonicRouterStructFile string
 
-  //go:embed default/controller/gingonic/router-register._go
+	//go:embed default/_controller/gingonic/router-register._go
 	ControllerGinGonicRouterRegisterFile string
 
 )
