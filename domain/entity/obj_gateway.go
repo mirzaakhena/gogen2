@@ -4,6 +4,7 @@ import (
   "fmt"
   "github.com/mirzaakhena/gogen2/application/apperror"
   "github.com/mirzaakhena/gogen2/domain/vo"
+  "github.com/mirzaakhena/gogen2/infrastructure/util"
   "go/ast"
   "go/parser"
   "go/token"
@@ -121,17 +122,28 @@ func FindGatewayByName(gatewayName string) (*ObjGateway, error) {
 
 func FindAllObjGateway() ([]*ObjGateway, error) {
 
-  gateways := make([]*ObjGateway, 0)
+  if !util.IsFileExist("gateway") {
+    return nil, fmt.Errorf("gateway is not created yet")
+  }
 
   dir, err := os.ReadDir("gateway")
   if err != nil {
     return nil, err
   }
 
+  gateways := make([]*ObjGateway, 0)
+
   for _, d := range dir {
+    if !d.IsDir() {
+      continue
+    }
+
     g, err := FindGatewayByName(d.Name())
     if err != nil {
       return nil, err
+    }
+    if g == nil {
+      continue
     }
 
     gateways = append(gateways, g)

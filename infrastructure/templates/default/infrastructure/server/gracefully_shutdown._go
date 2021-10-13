@@ -1,5 +1,16 @@
 package server
 
+import (
+	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"{{.PackagePath}}/infrastructure/log"
+)
+
 // GracefullyShutdown will handle http server with gracefully shutdown mechanism
 type GracefullyShutdown struct {
 	httpServer *http.Server

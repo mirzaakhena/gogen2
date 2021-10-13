@@ -37,8 +37,15 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
+  packagePath := r.outport.GetPackagePath(ctx)
+
   // create repository
-  err = service.CreateEverythingExactly("default/", "domain/repository", map[string]string{}, struct{}{})
+  err = service.CreateEverythingExactly("default/", "domain/repository", map[string]string{}, obj.GetData(packagePath))
+  if err != nil {
+    return nil, err
+  }
+
+  err = service.CreateEverythingExactly("default/", "application/apperror", map[string]string{}, struct{}{})
   if err != nil {
     return nil, err
   }
@@ -50,8 +57,6 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
   if err != nil {
     return nil, err
   }
-
-  packagePath := r.outport.GetPackagePath(ctx)
 
   if !exist {
     // check the prefix and give specific template for it

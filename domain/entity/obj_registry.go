@@ -8,8 +8,8 @@ import (
 type ObjRegistry struct {
   RegistryName  vo.Naming
   ObjController *ObjController
-  ObjUsecases   []*ObjUsecase
   ObjGateway    *ObjGateway
+  UsecaseNames  []string
 }
 
 type ObjDataRegistry struct {
@@ -24,7 +24,7 @@ type ObjGatewayRequest struct {
   RegistryName  string
   ObjController *ObjController
   ObjGateway    *ObjGateway
-  Usecases      []*ObjUsecase
+  UsecaseNames  []string
 }
 
 func NewObjRegistry(req ObjGatewayRequest) (*ObjRegistry, error) {
@@ -37,7 +37,7 @@ func NewObjRegistry(req ObjGatewayRequest) (*ObjRegistry, error) {
     return nil, fmt.Errorf("ObjGateway must not be nil")
   }
 
-  if req.Usecases == nil {
+  if len(req.UsecaseNames) == 0 {
     return nil, fmt.Errorf("usecases must not empty")
   }
 
@@ -45,7 +45,7 @@ func NewObjRegistry(req ObjGatewayRequest) (*ObjRegistry, error) {
   obj.RegistryName = vo.Naming(req.RegistryName)
   obj.ObjController = req.ObjController
   obj.ObjGateway = req.ObjGateway
-  obj.ObjUsecases = req.Usecases
+  obj.UsecaseNames = req.UsecaseNames
 
   return &obj, nil
 }
@@ -53,17 +53,12 @@ func NewObjRegistry(req ObjGatewayRequest) (*ObjRegistry, error) {
 // GetData ...
 func (o ObjRegistry) GetData(PackagePath string) *ObjDataRegistry {
 
-  usecaseNames := make([]string, 0)
-
-  for _, u := range o.ObjUsecases {
-    usecaseNames = append(usecaseNames, u.UsecaseName.String())
-  }
-
   return &ObjDataRegistry{
     PackagePath:    PackagePath,
     RegistryName:   o.RegistryName.String(),
     ControllerName: o.ObjController.ControllerName.String(),
-    UsecaseNames:   usecaseNames,
+    GatewayName:    o.ObjGateway.GatewayName.LowerCase(),
+    UsecaseNames:   o.UsecaseNames,
   }
 }
 
@@ -81,5 +76,3 @@ func GetApplicationFileName() string {
 func GetRegistryFileName(obj ObjRegistry) string {
   return fmt.Sprintf("%s/%s.go", GetRegistryRootFolderName(), obj.RegistryName.LowerCase())
 }
-
-

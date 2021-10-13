@@ -4,6 +4,7 @@ import (
   "context"
   "fmt"
   "github.com/mirzaakhena/gogen2/domain/entity"
+  "github.com/mirzaakhena/gogen2/domain/service"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -25,6 +26,58 @@ func (r *genRegistryInteractor) Execute(ctx context.Context, req InportRequest) 
   res := &InportResponse{}
 
   var objGateway *entity.ObjGateway
+  var objController *entity.ObjController
+
+  packagePath := r.outport.GetPackagePath(ctx)
+
+  err := service.CreateEverythingExactly("default/", "infrastructure/server", map[string]string{}, struct {
+    PackagePath string
+  }{PackagePath: packagePath})
+  if err != nil {
+    return nil, err
+  }
+
+  // if controller name is not given, then we will do auto controller discovery strategy
+  if req.ControllerName == "" {
+
+    // look up the controller by foldername
+    objControllers, err := entity.FindAllObjController()
+    if err != nil {
+      return nil, err
+    }
+
+    // if there is more than one controller
+    if len(objControllers) > 1 {
+      names := make([]string, 0)
+
+      // collect all the controller name
+      for _, g := range objControllers {
+        names = append(names, g.ControllerName.String())
+      }
+
+      // return error
+      return nil, fmt.Errorf("select one of this controller %v", names)
+    }
+
+    // currently, we are expecting only one gateway
+    objController = objControllers[0]
+
+  } else {
+
+    var err error
+
+    // when controller name is given
+    objController, err = entity.FindControllerByName(req.ControllerName)
+    if err != nil {
+      return nil, err
+    }
+
+    // in case the controller name is not found
+    if objController == nil {
+      return nil, fmt.Errorf("no controller with name %s found", req.ControllerName)
+    }
+
+  }
 
   // if gateway name is not given, then we will do auto gateway discovery strategy
   if req.GatewayName == "" {
@@ -33,11 +86,6 @@ func (r *genRegistryInteractor) Execute(ctx context.Context, req InportRequest) 
     objGateways, err := entity.FindAllObjGateway()
     if err != nil {
       return nil, err
-    }
-
-    // if there is no gateway at all
-    if objGateway == nil || len(objGateways) == 0 {
-      return nil, fmt.Errorf("no gateway found")
     }
 
     // if there is more than one gateway
@@ -72,7 +120,31 @@ func (r *genRegistryInteractor) Execute(ctx context.Context, req InportRequest) 
     }
   }
 
-  fmt.Printf("gateway: %s\n", req.GatewayName)
+  // we got the gateway
+  fmt.Printf("gateway: %s\n", objGateway.GatewayName)
+  fmt.Printf("controller: %s\n", objController.ControllerName)
+
+  usecaseNames, err := objController.FindAllUsecaseInportNameFromController()
+  if err != nil {
+    return nil, err
+  }
+
+  objRegistry, err :=entity.NewObjRegistry(entity.ObjGatewayRequest{
+    RegistryName:  req.RegistryName,
+    ObjController: objController,
+    ObjGateway:    objGateway,
+    UsecaseNames:  usecaseNames,
+  })
+  if err != nil {
+    return nil, err
+  }
+
+  err = service.CreateEverythingExactly("default/", "application", map[string]string{
+    "registryname": objRegistry.RegistryName.LowerCase(),
+  }, objRegistry.GetData(packagePath))
+  if err != nil {
+    return nil, err
+  }
 
   //// find controller by folder name
   //objController, err := r.outport.FindObjController(ctx, req.ControllerName)

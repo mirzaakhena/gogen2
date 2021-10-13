@@ -4,7 +4,6 @@ import (
   "context"
   "github.com/mirzaakhena/gogen2/domain/entity"
   "github.com/mirzaakhena/gogen2/domain/service"
-  "github.com/mirzaakhena/gogen2/infrastructure/templates"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -45,6 +44,11 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
+  err = service.CreateEverythingExactly("default/", "infrastructure/util", map[string]string{}, struct{}{})
+  if err != nil {
+    return nil, err
+  }
+
   packagePath := r.outport.GetPackagePath(ctx)
 
   err = service.CreateEverythingExactly("default/", "controller", map[string]string{
@@ -55,117 +59,9 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  //_, err = r.outport.CreateFolderIfNotExist(ctx, objCtrl.GetControllerRootFolderName())
-  //if err != nil {
-  //  return nil, err
-  //}
-  //
-  //{
-  //  tmp := r.outport.GetControllerTemplate(ctx)
-  //  _, err = r.outport.WriteFileIfNotExist(ctx, tmp, objCtrl.GetControllerInterfaceFile(), struct{}{})
-  //  if err != nil {
-  //    return nil, err
-  //  }
-  //}
-
-  //err = service.ConstructApplication(ctx, packagePath, r.outport)
-  //if err != nil {
-  //  return nil, err
-  //}
-
-  // create helper func in infrastructure
-  {
-    _, err := r.outport.CreateFolderIfNotExist(ctx, "infrastructure/util")
-    if err != nil {
-      return nil, err
-    }
-
-    bytes, err := templates.AppTemplates.ReadFile("default/infrastructure/util/helper._go")
-    if err != nil {
-      return nil, err
-    }
-
-    _, err = r.outport.WriteFileIfNotExist(ctx, string(bytes), "infrastructure/util/helper.go", struct{}{})
-    if err != nil {
-      return nil, err
-    }
-  }
-
   //framework := "gingonic"
 
   objDataCtrl := objCtrl.GetData(packagePath, *objUsecase)
-
-  //// create static response.go
-  //{
-  //  filename := objCtrl.GetControllerResponseFileName()
-  //  if !r.outport.IsFileExist(ctx, filename) {
-  //    templateFile := r.outport.GetResponseTemplate(ctx)
-  //
-  //    err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //
-  //    err = r.outport.Reformat(ctx, filename, nil)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //  }
-  //}
-
-  //// create dynamic interceptor.go
-  //{
-  //  filename := objCtrl.GetControllerInterceptorFileName()
-  //  if !r.outport.IsFileExist(ctx, filename) {
-  //    templateFile := r.outport.GetInterceptorTemplate(ctx, framework)
-  //
-  //    err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //
-  //    err = r.outport.Reformat(ctx, filename, nil)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //  }
-  //}
-
-  //// create dynamic handler_xxx.go
-  //{
-  //  filename := objCtrl.GetControllerHandlerFileName(*objUsecase)
-  //  if !r.outport.IsFileExist(ctx, filename) {
-  //    templateFile := r.outport.GetHandlerTemplate(ctx, framework)
-  //
-  //    err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //
-  //    err = r.outport.Reformat(ctx, filename, nil)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //  }
-  //}
-
-  //// create dynamic router.go
-  //{
-  //  filename := objCtrl.GetControllerRouterFileName()
-  //  if !r.outport.IsFileExist(ctx, filename) {
-  //    templateFile := r.outport.GetRouterTemplate(ctx, framework)
-  //
-  //    err := r.outport.WriteFile(ctx, templateFile, filename, objDataCtrl)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //
-  //    err = r.outport.Reformat(ctx, filename, nil)
-  //    if err != nil {
-  //      return nil, err
-  //    }
-  //  }
-  //}
 
   // inject inport to struct
   {

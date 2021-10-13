@@ -11,6 +11,7 @@ import (
   "github.com/mirzaakhena/gogen2/usecase/genentity"
   "github.com/mirzaakhena/gogen2/usecase/generror"
   "github.com/mirzaakhena/gogen2/usecase/gengateway"
+  "github.com/mirzaakhena/gogen2/usecase/genregistry"
   "github.com/mirzaakhena/gogen2/usecase/genrepository"
   "github.com/mirzaakhena/gogen2/usecase/gentest"
   "github.com/mirzaakhena/gogen2/usecase/genusecase"
@@ -40,7 +41,7 @@ func NewGogen2() func() application.RegistryContract {
         GenGatewayInport:    gengateway.NewUsecase(datasource),
         GenErrorInport:      generror.NewUsecase(datasource),
         GenControllerInport: gencontroller.NewUsecase(datasource),
-        //GenRegistryInport:   genregistry.NewUsecase(datasource),
+        GenRegistryInport:   genregistry.NewUsecase(datasource),
       },
     }
 

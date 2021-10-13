@@ -6,10 +6,12 @@ import (
   "fmt"
   "github.com/mirzaakhena/gogen2/application/apperror"
   "github.com/mirzaakhena/gogen2/domain/vo"
+  "github.com/mirzaakhena/gogen2/infrastructure/util"
   "go/ast"
   "go/parser"
   "go/token"
   "os"
+  "strings"
 )
 
 type ObjController struct {
@@ -243,4 +245,162 @@ func (o ObjController) getBindRouterLine() (int, error) {
 
   }
   return 0, fmt.Errorf("register router Not found")
+}
+
+const controllerStructName = "controller"
+
+func FindControllerByName(controllerName string) (*ObjController, error) {
+  folderName := fmt.Sprintf("controller/%s", strings.ToLower(controllerName))
+
+  fset := token.NewFileSet()
+  pkgs, err := parser.ParseDir(fset, folderName, nil, parser.ParseComments)
+  if err != nil {
+    return nil, err
+  }
+
+  for _, pkg := range pkgs {
+
+    // read file by file
+    for _, file := range pkg.Files {
+
+      // in every declaration like type, func, const
+      for _, decl := range file.Decls {
+
+        // focus only to type
+        gen, ok := decl.(*ast.GenDecl)
+        if !ok || gen.Tok != token.TYPE {
+          continue
+        }
+
+        for _, specs := range gen.Specs {
+
+          ts, ok := specs.(*ast.TypeSpec)
+          if !ok {
+            continue
+          }
+
+          if _, ok := ts.Type.(*ast.StructType); ok {
+
+            // check the specific struct name
+            if !strings.HasSuffix(strings.ToLower(ts.Name.String()), controllerStructName) {
+              continue
+            }
+
+            return NewObjController(pkg.Name, "")
+
+            //inportLine = fset.Position(iStruct.Fields.Closing).Line
+            //return inportLine, nil
+          }
+        }
+
+      }
+
+    }
+
+  }
+
+  return nil, nil
+}
+
+func FindAllObjController() ([]*ObjController, error) {
+
+  if !util.IsFileExist("controller") {
+    return nil, fmt.Errorf("controller is not created yet")
+  }
+
+  dir, err := os.ReadDir("controller")
+  if err != nil {
+    return nil, err
+  }
+
+  controllers := make([]*ObjController, 0)
+
+  for _, d := range dir {
+    if !d.IsDir() {
+      continue
+    }
+
+    g, err := FindControllerByName(d.Name())
+    if err != nil {
+      return nil, err
+    }
+    if g == nil {
+      continue
+    }
+
+    controllers = append(controllers, g)
+
+  }
+
+  return controllers, nil
+}
+
+func (o ObjController) FindAllUsecaseInportNameFromController() ([]string, error) {
+
+  res := make([]string, 0)
+
+  folderName := fmt.Sprintf("controller/%s", strings.ToLower(o.ControllerName.LowerCase()))
+
+  fset := token.NewFileSet()
+  pkgs, err := parser.ParseDir(fset, folderName, nil, parser.ParseComments)
+  if err != nil {
+    return nil, err
+  }
+
+  for _, pkg := range pkgs {
+
+    // read file by file
+    for _, file := range pkg.Files {
+
+      // in every declaration like type, func, const
+      for _, decl := range file.Decls {
+
+        // focus only to type
+        gen, ok := decl.(*ast.GenDecl)
+        if !ok || gen.Tok != token.TYPE {
+          continue
+        }
+
+        for _, specs := range gen.Specs {
+
+          ts, ok := specs.(*ast.TypeSpec)
+          if !ok {
+            continue
+          }
+
+          if x, ok := ts.Type.(*ast.StructType); ok {
+
+            // check the specific struct name
+            if !strings.HasSuffix(strings.ToLower(ts.Name.String()), controllerStructName) {
+              continue
+            }
+
+            for _, field := range x.Fields.List {
+
+              se, ok := field.Type.(*ast.SelectorExpr)
+              if !ok {
+                continue
+              }
+
+              if se.Sel.String() == "Inport" && len(field.Names) > 0 {
+                name := field.Names[0].String()
+                i := strings.Index(name, "Inport")
+                res = append(res, name[:i])
+
+              }
+
+            }
+
+            //inportLine = fset.Position(iStruct.Fields.Closing).Line
+            //return inportLine, nil
+          }
+        }
+
+      }
+
+    }
+
+  }
+
+  return res, nil
 }

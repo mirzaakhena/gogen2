@@ -4,5 +4,5 @@ if err != nil {
     return nil, err
 }
 if {{CamelCase .EntityName}}Obj == nil {
-    return nil, apperror.ObjectNotFound.Var({{CamelCase .EntityName}}Obj)
+    return nil, apperror.EntityNotFound.Var("{{PascalCase .EntityName}}",{{CamelCase .EntityName}}Obj)
 }

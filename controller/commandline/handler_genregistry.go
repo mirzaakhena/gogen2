@@ -13,14 +13,17 @@ func (r *Controller) genRegistryHandler(inputPort genregistry.Inport) func(...st
 
     ctx := context.Background()
 
-    if len(commands) < 2 {
-      err := fmt.Errorf("invalid gogen registry command format. Try this `gogen registry RegistryName ControllerName`")
+    if len(commands) < 1 {
+      err := fmt.Errorf("invalid gogen registry command format. Try this `gogen registry RegistryName`")
       return err
     }
 
     var req genregistry.InportRequest
     req.RegistryName = commands[0]
-    req.ControllerName = commands[1]
+
+    if len(commands) >= 2 {
+      req.ControllerName = commands[1]
+    }
 
     if len(commands) >= 3 {
       req.GatewayName = commands[2]

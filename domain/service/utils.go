@@ -4,6 +4,7 @@ import (
   "fmt"
   "github.com/mirzaakhena/gogen2/gateway/prod"
   "github.com/mirzaakhena/gogen2/infrastructure/templates"
+  "github.com/mirzaakhena/gogen2/infrastructure/util"
   "os"
   "strings"
   "text/template"
@@ -61,7 +62,7 @@ func CreateEverythingExactly(skip, path string, fileRenamer map[string]string, d
     // skip the first path
     k := strings.Index(nameFileWithoutUnderscore, skip)
 
-    if IsFileExist(nameFileWithoutUnderscore[k+lenSkip:]) {
+    if util.IsFileExist(nameFileWithoutUnderscore[k+lenSkip:]) {
       continue
     }
 
@@ -154,9 +155,3 @@ func readFolders(path string, ff *fileAndFolders) error {
 
 }
 
-func IsFileExist(filepath string) bool {
-  if _, err := os.Stat(filepath); os.IsNotExist(err) {
-    return false
-  }
-  return true
-}

@@ -4,6 +4,6 @@ if err != nil {
     return nil, err
 }
 
-if len({{CamelCase .EntityName}}Objs) == 0 {
-    return nil, fmt.Errorf("object not found")
+for _, obj := range {{CamelCase .EntityName}}Objs {
+    fmt.Printf("%v\n", obj)
 }
