@@ -5,6 +5,7 @@ import (
   "fmt"
   "github.com/mirzaakhena/gogen2/domain/entity"
   "github.com/mirzaakhena/gogen2/domain/service"
+  "github.com/mirzaakhena/gogen2/infrastructure/util"
 )
 
 //go:generate mockery --name Outport -output mocks/
@@ -120,16 +121,12 @@ func (r *genRegistryInteractor) Execute(ctx context.Context, req InportRequest) 
     }
   }
 
-  // we got the gateway
-  fmt.Printf("gateway: %s\n", objGateway.GatewayName)
-  fmt.Printf("controller: %s\n", objController.ControllerName)
-
   usecaseNames, err := objController.FindAllUsecaseInportNameFromController()
   if err != nil {
     return nil, err
   }
 
-  objRegistry, err :=entity.NewObjRegistry(entity.ObjGatewayRequest{
+  objRegistry, err := entity.NewObjRegistry(entity.ObjGatewayRequest{
     RegistryName:  req.RegistryName,
     ObjController: objController,
     ObjGateway:    objGateway,
@@ -139,11 +136,21 @@ func (r *genRegistryInteractor) Execute(ctx context.Context, req InportRequest) 
     return nil, err
   }
 
-  err = service.CreateEverythingExactly("default/", "application", map[string]string{
-    "registryname": objRegistry.RegistryName.LowerCase(),
-  }, objRegistry.GetData(packagePath))
-  if err != nil {
-    return nil, err
+  if !util.IsFileExist(objRegistry.GetRegistryFileName()) {
+
+    err = service.CreateEverythingExactly("default/", "application", map[string]string{
+      "registryname": objRegistry.RegistryName.LowerCase(),
+    }, objRegistry.GetData(packagePath))
+    if err != nil {
+      return nil, err
+    }
+  } else {
+
+    err = objRegistry.InjectUsecaseInportField()
+    if err != nil {
+      return nil, err
+    }
+
   }
 
   //// find controller by folder name

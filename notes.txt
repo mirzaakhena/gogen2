@@ -164,3 +164,6 @@ you need to think in oop perspective first not in database perspective.
 
 registry name is an application name
 gogen support multiple applicationn in one repo
+
+
+sequence diagram for peta perang dan trace id  dan pembagia tugas perusecase
