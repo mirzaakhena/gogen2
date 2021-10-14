@@ -105,6 +105,7 @@ func (o ObjRegistry) InjectUsecaseInportField() error {
 
     ast.Print(fset, decl)
 
+
     //for _, specs := range gen.Specs {
     //
     //  ts, ok := specs.(*ast.TypeSpec)

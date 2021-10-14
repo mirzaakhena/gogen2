@@ -15,6 +15,10 @@ func (r *prodGateway) GetRegistryTemplate(ctx context.Context) string {
   return templates.RegistryGingonicFile
 }
 
+func (r *prodGateway) GetMainFileTemplate(ctx context.Context) (string) {
+  return templates.ReadFile("main._go")
+}
+
 func (r *prodGateway) FindObjController(ctx context.Context, controllerName string) (*entity.ObjController, error) {
   panic("implement me")
 }

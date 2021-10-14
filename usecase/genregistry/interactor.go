@@ -146,12 +146,18 @@ func (r *genRegistryInteractor) Execute(ctx context.Context, req InportRequest) 
     }
   } else {
 
-    err = objRegistry.InjectUsecaseInportField()
-    if err != nil {
-      return nil, err
-    }
+    //err = objRegistry.InjectUsecaseInportField()
+    //if err != nil {
+    //  return nil, err
+    //}
 
   }
+
+   templateFile := r.outport.GetMainFileTemplate(ctx)
+   _, err = r.outport.WriteFileIfNotExist(ctx, templateFile, "main.go", objRegistry.GetData(packagePath))
+   if err != nil {
+     return nil, err
+   }
 
   //// find controller by folder name
   //objController, err := r.outport.FindObjController(ctx, req.ControllerName)
