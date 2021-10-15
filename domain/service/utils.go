@@ -126,12 +126,12 @@ func readFolders(path string, ff *fileAndFolders) error {
     if dir.IsDir() {
 
       s := fmt.Sprintf("%s/%s", path, name)
-      fmt.Printf("ketemu folder %s\n", s)
+      //fmt.Printf("found folder %s\n", s)
 
       for k := range ff.Folders {
         //fmt.Printf("k=%v\n", k)
         if strings.Contains(s, k) {
-          fmt.Printf("remove %v from %v\n", k, ff.Folders)
+          //fmt.Printf("remove %v from %v\n", k, ff.Folders)
           delete(ff.Folders, k)
         }
       }
@@ -145,7 +145,7 @@ func readFolders(path string, ff *fileAndFolders) error {
 
     } else {
       s := fmt.Sprintf("%s/%s", path, name)
-      fmt.Printf("ketemu file   %s\n", s)
+      //fmt.Printf("found file   %s\n", s)
       ff.Files = append(ff.Files, s)
     }
 
