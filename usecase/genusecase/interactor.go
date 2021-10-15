@@ -39,13 +39,34 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
   //  }
   //}
 
+  //// TODO violate clean architecure. need to fix later!
+  //{
+  //  _, err = r.outport.CreateFolderIfNotExist(ctx, "domain/repository")
+  //  if err != nil {
+  //    return nil, err
+  //  }
+  //
+  //  tmp := templates.ReadFile("domain/repository/database._go")
+  //  outputFile := "domain/repository/database.go"
+  //  _, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
+  //  if err != nil {
+  //    return nil, err
+  //  }
+  //}
+  //
+  //
+  //err = service.CreateEverythingExactly("default/", "domain/service", fileRenamer, obj.GetData(packagePath))
+  //if err != nil {
+  //  return nil, err
+  //}
+
   packagePath := r.outport.GetPackagePath(ctx)
 
   fileRenamer := map[string]string{
-    "usecasename":  obj.UsecaseName.LowerCase(),
+    "usecasename": obj.UsecaseName.LowerCase(),
   }
 
-  err = service.CreateEverythingExactly("default/","usecase", fileRenamer, obj.GetData(packagePath))
+  err = service.CreateEverythingExactly("default/", "usecase", fileRenamer, obj.GetData(packagePath))
   if err != nil {
     return nil, err
   }

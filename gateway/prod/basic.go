@@ -4,6 +4,7 @@ import (
   "bufio"
   "bytes"
   "context"
+  "fmt"
   "golang.org/x/tools/imports"
   "io/ioutil"
   "os"
@@ -109,7 +110,8 @@ func (r *basicUtilityGateway) GetPackagePath(ctx context.Context) string {
 
   file, err := os.Open("go.mod")
   if err != nil {
-    panic("go.mod is not found. Please create it with command `go mod init your/path/project`\n")
+    fmt.Printf("go.mod is not found. Please create it with command `go mod init your/path/project`\n")
+    os.Exit(1)
   }
   defer func() {
     err = file.Close()

@@ -159,11 +159,12 @@ not to eliminate boilerplate code. but for helpinng you write a layout.
 
 you need to think in oop perspective first not in database perspective.
 
-
 lazy to create documentationn. work twice?
 
-registry name is an application name
-gogen support multiple applicationn in one repo
+deleting is easier than creating
 
+registry name is an application name
+
+gogen support multiple applicationn in one repo
 
 sequence diagram for peta perang dan trace id  dan pembagia tugas perusecase
