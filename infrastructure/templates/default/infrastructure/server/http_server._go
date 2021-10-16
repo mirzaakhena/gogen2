@@ -14,7 +14,7 @@ type GinHTTPHandler struct {
 	Router *gin.Engine
 }
 
-func NewGinHTTPHandler(address string) (GinHTTPHandler, error) {
+func NewGinHTTPHandler(address string) GinHTTPHandler {
 
 	router := gin.Default()
 
@@ -35,8 +35,7 @@ func NewGinHTTPHandler(address string) (GinHTTPHandler, error) {
 	return GinHTTPHandler{
 		GracefullyShutdown: NewGracefullyShutdown(router, address),
 		Router:             router,
-	}, nil
-
+	}
 }
 
 // RunApplication is implementation of RegistryContract.RunApplication()

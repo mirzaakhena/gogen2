@@ -30,67 +30,37 @@ func (r *genUsecaseInteractor) Execute(ctx context.Context, req InportRequest) (
     return nil, err
   }
 
-  //// create folder usecase
-  //{
-  //  folderPath := obj.GetUsecaseRootFolderName()
-  //  _, err := r.outport.CreateFolderIfNotExist(ctx, folderPath)
-  //  if err != nil {
-  //    return nil, err
-  //  }
-  //}
-
-  //// TODO violate clean architecure. need to fix later!
-  //{
-  //  _, err = r.outport.CreateFolderIfNotExist(ctx, "domain/repository")
-  //  if err != nil {
-  //    return nil, err
-  //  }
-  //
-  //  tmp := templates.ReadFile("domain/repository/database._go")
-  //  outputFile := "domain/repository/database.go"
-  //  _, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
-  //  if err != nil {
-  //    return nil, err
-  //  }
-  //}
-  //
-  //
-  //err = service.CreateEverythingExactly("default/", "domain/service", fileRenamer, obj.GetData(packagePath))
-  //if err != nil {
-  //  return nil, err
-  //}
-
   packagePath := r.outport.GetPackagePath(ctx)
 
   fileRenamer := map[string]string{
     "usecasename": obj.UsecaseName.LowerCase(),
   }
 
+  //err = service.CreateEverythingExactly("default/", "domain/repository", fileRenamer, obj.GetData(packagePath))
+  //if err != nil {
+  //  return nil, err
+  //}
+  //
+  //err = service.CreateEverythingExactly("default/", "domain/service", fileRenamer, obj.GetData(packagePath))
+  //if err != nil {
+  //  return nil, err
+  //}
+
   err = service.CreateEverythingExactly("default/", "usecase", fileRenamer, obj.GetData(packagePath))
   if err != nil {
     return nil, err
   }
 
-  //// create file inport.go
-  //{
-  //  tmp := r.outport.GetInportTemplate(ctx)
-  //	outputFile := obj.GetInportFileName()
-  //  _, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
-  //  if err != nil {
-  //    return nil, err
-  //  }
+  //_, err = r.outport.CreateFolderIfNotExist(ctx, "domain/entity")
+  //if err != nil {
+  //  return nil, err
   //}
   //
-  //// create file outport.go
-  //{
-  //	tmp := r.outport.GetOutportTemplate(ctx)
-  //	outputFile := obj.GetOutportFileName()
-  //	_, err = r.outport.WriteFileIfNotExist(ctx, tmp, outputFile, obj.GetData(packagePath))
-  //	if err != nil {
-  //		return nil, err
-  //	}
+  //_, err = r.outport.CreateFolderIfNotExist(ctx, "domain/vo")
+  //if err != nil {
+  //  return nil, err
   //}
-  //
+
   //// create file interactor.go
   //{
   //	tmp := r.outport.GetInteractorTemplate(ctx)

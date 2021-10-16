@@ -3,6 +3,7 @@ package entity
 import (
   "bufio"
   "bytes"
+  "fmt"
   "go/ast"
   "go/parser"
   "go/token"
@@ -23,11 +24,11 @@ func InjectCodeAtTheEndOfFile(filename, templateCode string) ([]byte, error) {
   if err != nil {
     return nil, err
   }
-	defer func() {
-		if err := file.Close(); err != nil {
-			return
-		}
-	}()
+  defer func() {
+    if err := file.Close(); err != nil {
+      return
+    }
+  }()
 
   scanner := bufio.NewScanner(file)
   var buffer bytes.Buffer
@@ -50,7 +51,8 @@ func IsExist(fset *token.FileSet, rootFolderName string, foundExactType func(fil
 
   pkgs, err := parser.ParseDir(fset, rootFolderName, nil, parser.ParseComments)
   if err != nil {
-    panic(err)
+    fmt.Printf("%v\n", err.Error())
+    os.Exit(1)
   }
 
   // in every package
@@ -97,4 +99,3 @@ func IsExist(fset *token.FileSet, rootFolderName string, foundExactType func(fil
   }
   return false
 }
-

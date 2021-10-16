@@ -7,6 +7,7 @@ bisa pilih log library
 create new usecase will create new interactor
 create new test will adding new unexisting method
 tambahin komen di tiap template
+tambahkann traceID
 
 gogen2 gateway prod CreateOrder
 gogen2 gateway prod CreateOrder ShowOrder

@@ -8,7 +8,6 @@ import (
 	"{{.PackagePath}}/infrastructure/log"
 	"{{.PackagePath}}/infrastructure/util"
 	"{{.PackagePath}}/usecase/{{LowerCase .UsecaseName}}"
-	"{{.PackagePath}}/application/apperror"
 )
 
 // {{CamelCase .UsecaseName}}Handler ...
@@ -16,13 +15,14 @@ func (r *Controller){{CamelCase .UsecaseName}}Handler(inputPort {{LowerCase .Use
 
 	return func(c *gin.Context) {
 
-		ctx := log.Context(c.Request.Context())
+		traceID := util.GenerateID()
+
+		ctx := log.Context(c.Request.Context(), traceID)
 
 		var req {{LowerCase .UsecaseName}}.InportRequest
 		if err := c.BindJSON(&req); err != nil {
-			newErr := apperror.FailUnmarshalResponseBodyError
 			log.Error(ctx, err.Error())
-			c.JSON(http.StatusBadRequest, NewErrorResponse(newErr))
+			c.JSON(http.StatusBadRequest, NewErrorResponse(err, traceID))
 			return
 		}
 
@@ -31,12 +31,12 @@ func (r *Controller){{CamelCase .UsecaseName}}Handler(inputPort {{LowerCase .Use
 		res, err := inputPort.Execute(ctx, req)
 		if err != nil {
 			log.Error(ctx, err.Error())
-			c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+			c.JSON(http.StatusBadRequest, NewErrorResponse(err, traceID))
 			return
 		}
 
 		log.Info(ctx, util.MustJSON(res))
-		c.JSON(http.StatusOK, NewSuccessResponse(res))
+		c.JSON(http.StatusOK, NewSuccessResponse(res, traceID))
 
 	}
 }

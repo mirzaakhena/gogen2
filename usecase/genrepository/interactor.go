@@ -45,12 +45,11 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  err = service.CreateEverythingExactly("default/", "application/apperror", map[string]string{}, struct{}{})
+  // create service
+  err = service.CreateEverythingExactly("default/", "domain/service", map[string]string{}, obj.GetData(packagePath))
   if err != nil {
     return nil, err
   }
-
-  existingFile := "domain/repository/repository.go"
 
   // repository.go file is already exist, but is the innterface is exist ?
   exist, err := obj.IsRepoExist()
@@ -76,7 +75,7 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
     }
 
     // reformat interactor.go
-    err = r.outport.Reformat(ctx, existingFile, bytes)
+    err = r.outport.Reformat(ctx, "domain/repository/repository.go", bytes)
     if err != nil {
      return nil, err
     }

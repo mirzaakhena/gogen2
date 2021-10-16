@@ -34,22 +34,22 @@ func (r *genControllerInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  err = service.CreateEverythingExactly("default/", "application/apperror", map[string]string{}, struct{}{})
-  if err != nil {
-    return nil, err
-  }
-
-  err = service.CreateEverythingExactly("default/", "infrastructure/log", map[string]string{}, struct{}{})
-  if err != nil {
-    return nil, err
-  }
-
-  err = service.CreateEverythingExactly("default/", "infrastructure/util", map[string]string{}, struct{}{})
-  if err != nil {
-    return nil, err
-  }
-
   packagePath := r.outport.GetPackagePath(ctx)
+
+  err = service.CreateEverythingExactly("default/", "application/apperror", map[string]string{}, struct{PackagePath string}{PackagePath: packagePath})
+  if err != nil {
+    return nil, err
+  }
+
+  err = service.CreateEverythingExactly("default/", "infrastructure/log", map[string]string{}, struct{PackagePath string}{PackagePath: packagePath})
+  if err != nil {
+    return nil, err
+  }
+
+  err = service.CreateEverythingExactly("default/", "infrastructure/util", map[string]string{}, struct{PackagePath string}{PackagePath: packagePath})
+  if err != nil {
+    return nil, err
+  }
 
   err = service.CreateEverythingExactly("default/", "controller", map[string]string{
     "controllername": objCtrl.ControllerName.LowerCase(),

@@ -26,7 +26,9 @@ func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*In
 
   res := &InportResponse{}
 
-  err := service.CreateEverythingExactly("default/", "infrastructure/log", map[string]string{}, struct{}{})
+  packagePath := r.outport.GetPackagePath(ctx)
+
+  err := service.CreateEverythingExactly("default/", "infrastructure/log", map[string]string{}, struct{PackagePath string}{PackagePath: packagePath})
   if err != nil {
     return nil, err
   }
@@ -40,8 +42,6 @@ func (r *genTestInteractor) Execute(ctx context.Context, req InportRequest) (*In
   if err != nil {
     return nil, err
   }
-
-  packagePath := r.outport.GetPackagePath(ctx)
 
   outportMethods, err := vo.NewOutportMethods(req.UsecaseName, packagePath)
   if err != nil {
