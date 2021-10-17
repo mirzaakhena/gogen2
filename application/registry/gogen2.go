@@ -17,6 +17,7 @@ import (
   "github.com/mirzaakhena/gogen2/usecase/gentest"
   "github.com/mirzaakhena/gogen2/usecase/genusecase"
   "github.com/mirzaakhena/gogen2/usecase/genvalueobject"
+  "github.com/mirzaakhena/gogen2/usecase/genvaluestring"
 )
 
 type gogen2 struct {
@@ -46,6 +47,7 @@ func NewGogen2() func() application.RegistryContract {
         GenControllerInport:  gencontroller.NewUsecase(datasource),
         GenRegistryInport:    genregistry.NewUsecase(datasource),
         GenValueObjectInport: genvalueobject.NewUsecase(datasource),
+        GenValueStringInport: genvaluestring.NewUsecase(datasource),
       },
     }
 

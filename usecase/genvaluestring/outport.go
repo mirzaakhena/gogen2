@@ -1,14 +1,14 @@
-package genvalueobject
+package genvaluestring
 
 import (
   "context"
   "github.com/mirzaakhena/gogen2/domain/service"
 )
 
-// Outport of GenValueObject
+// Outport of GenValueString
 type Outport interface {
   service.CreateFolderIfNotExistService
   service.WriteFileIfNotExistService
 
-  GetValueObjectTemplate(ctx context.Context) string
+  GetValueStringTemplate(ctx context.Context) string
 }

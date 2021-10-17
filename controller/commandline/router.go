@@ -11,6 +11,7 @@ import (
   "github.com/mirzaakhena/gogen2/usecase/gentest"
   "github.com/mirzaakhena/gogen2/usecase/genusecase"
   "github.com/mirzaakhena/gogen2/usecase/genvalueobject"
+  "github.com/mirzaakhena/gogen2/usecase/genvaluestring"
 )
 
 // Controller ...
@@ -26,6 +27,7 @@ type Controller struct {
   GenControllerInport  gencontroller.Inport
   GenRegistryInport    genregistry.Inport
   GenValueObjectInport genvalueobject.Inport
+  GenValueStringInport genvaluestring.Inport
 }
 
 // RegisterRouter registering all the router
@@ -40,4 +42,5 @@ func (r *Controller) RegisterRouter() {
   r.CommandMap["controller"] = r.genControllerHandler(r.GenControllerInport)
   r.CommandMap["registry"] = r.genRegistryHandler(r.GenRegistryInport)
   r.CommandMap["valueobject"] = r.genValueObjectHandler(r.GenValueObjectInport)
+  r.CommandMap["valuestring"] = r.genValueStringHandler(r.GenValueStringInport)
 }
