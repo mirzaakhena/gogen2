@@ -13,6 +13,7 @@ import (
   "github.com/mirzaakhena/gogen2/usecase/gengateway"
   "github.com/mirzaakhena/gogen2/usecase/genregistry"
   "github.com/mirzaakhena/gogen2/usecase/genrepository"
+  "github.com/mirzaakhena/gogen2/usecase/genservice"
   "github.com/mirzaakhena/gogen2/usecase/gentest"
   "github.com/mirzaakhena/gogen2/usecase/genusecase"
 )
@@ -38,6 +39,7 @@ func NewGogen2() func() application.RegistryContract {
         GenTestInport:       gentest.NewUsecase(datasource),
         GenEntityInport:     genentity.NewUsecase(datasource),
         GenRepositoryInport: genrepository.NewUsecase(datasource),
+        GenServiceInport:    genservice.NewUsecase(datasource),
         GenGatewayInport:    gengateway.NewUsecase(datasource),
         GenErrorInport:      generror.NewUsecase(datasource),
         GenControllerInport: gencontroller.NewUsecase(datasource),
@@ -65,7 +67,7 @@ func (r *gogen2) RunApplication() {
 
   f, exists := r.CommandMap[cmd]
   if !exists {
-    fmt.Printf( "Command %s is not recognized\n", cmd)
+    fmt.Printf("Command %s is not recognized\n", cmd)
     return
   }
   err := f(values...)

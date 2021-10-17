@@ -33,6 +33,11 @@ func (r *genGatewayInteractor) Execute(ctx context.Context, req InportRequest) (
 		return nil, err
 	}
 
+	err = service.CreateEverythingExactly("default/", "infrastructure/util", map[string]string{}, struct{PackagePath string}{PackagePath: packagePath})
+	if err != nil {
+		return nil, err
+	}
+
 	obj, err := entity.NewObjGateway(req.GatewayName)
 	if err != nil {
 		return nil, err

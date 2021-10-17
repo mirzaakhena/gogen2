@@ -11,6 +11,8 @@ import (
   "strings"
 )
 
+const injectedCodeLocation = "//!"
+
 // GetPackageName ...
 func GetPackageName(rootFolderName string) string {
   i := strings.LastIndex(rootFolderName, "/")

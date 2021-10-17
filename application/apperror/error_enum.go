@@ -7,4 +7,5 @@ const (
 	GatewayNameMustNotEmpty    ErrorType = "ER1000 gateway name must not empty"    //
 	ControllerNameMustNotEmpty ErrorType = "ER1000 controller name must not empty" //
 	RepositoryNameMustNotEmpty ErrorType = "ER1000 repository name must not empty" //
+	ServiceNameMustNotEmpty    ErrorType = "ER1000 service name must not empty"    //
 )

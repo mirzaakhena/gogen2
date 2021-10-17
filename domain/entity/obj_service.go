@@ -15,38 +15,28 @@ import (
   "strings"
 )
 
-// ObjRepository ...
-type ObjRepository struct {
-  RepositoryName vo.Naming
-  ObjEntity      ObjEntity
-  ObjUsecase     ObjUsecase
+// ObjService ...
+type ObjService struct {
+  ServiceName vo.Naming
+  ObjUsecase  ObjUsecase
 }
 
-// ObjDataRepository ...
-type ObjDataRepository struct {
-  PackagePath    string
-  RepositoryName string
-  EntityName     string
-  UsecaseName    string
+// ObjDataService ...
+type ObjDataService struct {
+  PackagePath string
+  ServiceName string
+  UsecaseName string
 }
 
-// NewObjRepository ...
-func NewObjRepository(repositoryName, entityName, usecaseName string) (*ObjRepository, error) {
+// NewObjService ...
+func NewObjService(serviceName, usecaseName string) (*ObjService, error) {
 
-  if repositoryName == "" {
-    return nil, apperror.RepositoryNameMustNotEmpty
+  if serviceName == "" {
+    return nil, apperror.ServiceNameMustNotEmpty
   }
 
-  var obj ObjRepository
-  obj.RepositoryName = vo.Naming(repositoryName)
-
-  {
-    et, err := NewObjEntity(entityName)
-    if err != nil {
-      return nil, err
-    }
-    obj.ObjEntity = *et
-  }
+  var obj ObjService
+  obj.ServiceName = vo.Naming(serviceName)
 
   if usecaseName != "" {
     uc, err := NewObjUsecase(usecaseName)
@@ -61,42 +51,43 @@ func NewObjRepository(repositoryName, entityName, usecaseName string) (*ObjRepos
 }
 
 // GetData ...
-func (o ObjRepository) GetData(PackagePath string) *ObjDataRepository {
-  return &ObjDataRepository{
-    PackagePath:    PackagePath,
-    RepositoryName: o.RepositoryName.String(),
-    EntityName:     o.ObjEntity.EntityName.String(),
-    UsecaseName:    o.ObjUsecase.UsecaseName.String(),
+func (o ObjService) GetData(PackagePath string) *ObjDataService {
+  return &ObjDataService{
+    PackagePath: PackagePath,
+    ServiceName: o.ServiceName.String(),
+    UsecaseName: o.ObjUsecase.UsecaseName.String(),
   }
 }
 
-// GetRepositoryRootFolderName ...
-func (o ObjRepository) GetRepositoryRootFolderName() string {
-  return fmt.Sprintf("domain/repository")
+// GetServiceRootFolderName ...
+func (o ObjService) GetServiceRootFolderName() string {
+  return fmt.Sprintf("domain/service")
 }
 
-// GetRepositoryFileName ...
-func (o ObjRepository) GetRepositoryFileName() string {
-  return fmt.Sprintf("%s/repository.go", o.GetRepositoryRootFolderName())
+// GetServiceFileName ...
+func (o ObjService) GetServiceFileName() string {
+  return fmt.Sprintf("%s/service.go", o.GetServiceRootFolderName())
 }
 
-// IsRepoExist ...
-func (o ObjRepository) IsRepoExist() (bool, error) {
+// IsServiceExist ...
+func (o ObjService) IsServiceExist() (bool, error) {
   fset := token.NewFileSet()
-  exist := IsExist(fset, o.GetRepositoryRootFolderName(), func(file *ast.File, ts *ast.TypeSpec) bool {
-    _, ok := ts.Type.(*ast.InterfaceType)
-    return ok && ts.Name.String() == o.getRepositoryName()
+  exist := IsExist(fset, o.GetServiceRootFolderName(), func(file *ast.File, ts *ast.TypeSpec) bool {
+    _, isInterface := ts.Type.(*ast.InterfaceType)
+    _, isStruct := ts.Type.(*ast.StructType)
+    // TODO we need to handle service as function
+    return (isStruct || isInterface) && ts.Name.String() == o.getServiceName()
   })
   return exist, nil
 }
 
 // InjectCode ...
-func (o ObjRepository) InjectCode(repoTemplateCode string) ([]byte, error) {
-  return InjectCodeAtTheEndOfFile(o.GetRepositoryFileName(), repoTemplateCode)
+func (o ObjService) InjectCode(repoTemplateCode string) ([]byte, error) {
+  return InjectCodeAtTheEndOfFile(o.GetServiceFileName(), repoTemplateCode)
 }
 
 // InjectToOutport ...
-func (o ObjRepository) InjectToOutport() error {
+func (o ObjService) InjectToOutport() error {
 
   fset := token.NewFileSet()
 
@@ -117,7 +108,7 @@ func (o ObjRepository) InjectToOutport() error {
         selType, ok := meth.Type.(*ast.SelectorExpr)
 
         // if interface already injected (SaveOrderRepo) then abort the mission
-        if ok && selType.Sel.String() == o.getRepositoryName() {
+        if ok && selType.Sel.String() == o.getServiceName() {
           return true
         }
       }
@@ -139,10 +130,10 @@ func (o ObjRepository) InjectToOutport() error {
   iFace.Methods.List = append(iFace.Methods.List, &ast.Field{
     Type: &ast.SelectorExpr{
       X: &ast.Ident{
-        Name: GetPackageName(o.GetRepositoryRootFolderName()),
+        Name: GetPackageName(o.GetServiceRootFolderName()),
       },
       Sel: &ast.Ident{
-        Name: o.getRepositoryName(),
+        Name: o.getServiceName(),
       },
     },
   })
@@ -181,7 +172,7 @@ func (o ObjRepository) InjectToOutport() error {
 }
 
 // InjectToInteractor ...
-func (o ObjRepository) InjectToInteractor(injectedCode string) ([]byte, error) {
+func (o ObjService) InjectToInteractor(injectedCode string) ([]byte, error) {
 
   existingFile := o.ObjUsecase.GetInteractorFileName()
 
@@ -234,6 +225,6 @@ func (o ObjRepository) InjectToInteractor(injectedCode string) ([]byte, error) {
   return buffer.Bytes(), nil
 }
 
-func (o ObjRepository) getRepositoryName() string {
-  return fmt.Sprintf("%sRepo", o.RepositoryName)
+func (o ObjService) getServiceName() string {
+  return fmt.Sprintf("%sService", o.ServiceName)
 }

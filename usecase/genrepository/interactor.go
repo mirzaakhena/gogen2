@@ -51,7 +51,7 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
     return nil, err
   }
 
-  // repository.go file is already exist, but is the innterface is exist ?
+  // repository.go file is already exist, but is the interface is exist ?
   exist, err := obj.IsRepoExist()
   if err != nil {
     return nil, err
@@ -59,11 +59,7 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
 
   if !exist {
     // check the prefix and give specific template for it
-    templateCode, err := r.outport.GetRepositoryFunctionTemplate(ctx, obj.RepositoryName)
-    if err != nil {
-      return nil, err
-    }
-
+    templateCode := r.outport.GetRepoInterfaceTemplate(ctx, obj.RepositoryName)
     templateHasBeenInjected, err := r.outport.PrintTemplate(ctx, templateCode, obj.GetData(packagePath))
     if err != nil {
       return nil, err
@@ -105,11 +101,7 @@ func (r *genRepositoryInteractor) Execute(ctx context.Context, req InportRequest
   // inject to interactor
   {
     // check the prefix and give specific template for it
-    interactorCode, err := r.outport.GetInteractorRepoCallTemplate(ctx, obj.RepositoryName)
-    if err != nil {
-      return nil, err
-    }
-
+    interactorCode := r.outport.GetRepoInjectTemplate(ctx, obj.RepositoryName)
     templateHasBeenInjected, err := r.outport.PrintTemplate(ctx, interactorCode, obj.GetData(packagePath))
     if err != nil {
       return nil, err
