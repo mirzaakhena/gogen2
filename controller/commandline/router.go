@@ -10,20 +10,22 @@ import (
   "github.com/mirzaakhena/gogen2/usecase/genservice"
   "github.com/mirzaakhena/gogen2/usecase/gentest"
   "github.com/mirzaakhena/gogen2/usecase/genusecase"
+  "github.com/mirzaakhena/gogen2/usecase/genvalueobject"
 )
 
 // Controller ...
 type Controller struct {
-  CommandMap          map[string]func(...string) error
-  GenUsecaseInport    genusecase.Inport
-  GenTestInport       gentest.Inport
-  GenEntityInport     genentity.Inport
-  GenRepositoryInport genrepository.Inport
-  GenServiceInport    genservice.Inport
-  GenGatewayInport    gengateway.Inport
-  GenErrorInport      generror.Inport
-  GenControllerInport gencontroller.Inport
-  GenRegistryInport   genregistry.Inport
+  CommandMap           map[string]func(...string) error
+  GenUsecaseInport     genusecase.Inport
+  GenTestInport        gentest.Inport
+  GenEntityInport      genentity.Inport
+  GenRepositoryInport  genrepository.Inport
+  GenServiceInport     genservice.Inport
+  GenGatewayInport     gengateway.Inport
+  GenErrorInport       generror.Inport
+  GenControllerInport  gencontroller.Inport
+  GenRegistryInport    genregistry.Inport
+  GenValueObjectInport genvalueobject.Inport
 }
 
 // RegisterRouter registering all the router
@@ -37,4 +39,5 @@ func (r *Controller) RegisterRouter() {
   r.CommandMap["error"] = r.genErrorHandler(r.GenErrorInport)
   r.CommandMap["controller"] = r.genControllerHandler(r.GenControllerInport)
   r.CommandMap["registry"] = r.genRegistryHandler(r.GenRegistryInport)
+  r.CommandMap["valueobject"] = r.genValueObjectHandler(r.GenValueObjectInport)
 }

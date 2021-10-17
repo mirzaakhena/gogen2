@@ -16,6 +16,7 @@ import (
   "github.com/mirzaakhena/gogen2/usecase/genservice"
   "github.com/mirzaakhena/gogen2/usecase/gentest"
   "github.com/mirzaakhena/gogen2/usecase/genusecase"
+  "github.com/mirzaakhena/gogen2/usecase/genvalueobject"
 )
 
 type gogen2 struct {
@@ -34,16 +35,17 @@ func NewGogen2() func() application.RegistryContract {
     return &gogen2{
       CommandMap: commandMap,
       Controller: &commandline.Controller{
-        CommandMap:          commandMap,
-        GenUsecaseInport:    genusecase.NewUsecase(datasource),
-        GenTestInport:       gentest.NewUsecase(datasource),
-        GenEntityInport:     genentity.NewUsecase(datasource),
-        GenRepositoryInport: genrepository.NewUsecase(datasource),
-        GenServiceInport:    genservice.NewUsecase(datasource),
-        GenGatewayInport:    gengateway.NewUsecase(datasource),
-        GenErrorInport:      generror.NewUsecase(datasource),
-        GenControllerInport: gencontroller.NewUsecase(datasource),
-        GenRegistryInport:   genregistry.NewUsecase(datasource),
+        CommandMap:           commandMap,
+        GenUsecaseInport:     genusecase.NewUsecase(datasource),
+        GenTestInport:        gentest.NewUsecase(datasource),
+        GenEntityInport:      genentity.NewUsecase(datasource),
+        GenRepositoryInport:  genrepository.NewUsecase(datasource),
+        GenServiceInport:     genservice.NewUsecase(datasource),
+        GenGatewayInport:     gengateway.NewUsecase(datasource),
+        GenErrorInport:       generror.NewUsecase(datasource),
+        GenControllerInport:  gencontroller.NewUsecase(datasource),
+        GenRegistryInport:    genregistry.NewUsecase(datasource),
+        GenValueObjectInport: genvalueobject.NewUsecase(datasource),
       },
     }
 

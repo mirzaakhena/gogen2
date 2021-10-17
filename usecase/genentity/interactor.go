@@ -38,7 +38,7 @@ func (r *genEntityInteractor) Execute(ctx context.Context, req InportRequest) (*
     return nil, err
   }
 
-  // reformat interactor.go
+  // reformat entity.go
   err = r.outport.Reformat(ctx, fmt.Sprintf("domain/entity/%s.go", obj.EntityName.SnakeCase()), nil)
   if err != nil {
     return nil, err
